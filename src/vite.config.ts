@@ -20,4 +20,11 @@ export default defineConfig({
             },
         }),
     ],
+    server: {
+      host: '0.0.0.0', // コンテナ内で動作させる
+      port: 5173,      // ポート番号を明示
+      hmr: {
+        host: 'localhost', // ブラウザアクセス用のホスト名
+      },
+    },
 });
