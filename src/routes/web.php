@@ -13,3 +13,7 @@ Route::get('dashboard', function () {
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
+
+// Route::get('/test', function () {
+//     return Inertia::render('Test/Test');
+// })->name('test');
