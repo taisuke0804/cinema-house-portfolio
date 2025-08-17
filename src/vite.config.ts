@@ -27,4 +27,13 @@ export default defineConfig({
         host: 'localhost', // ブラウザアクセス用のホスト名
       },
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor': ['vue', 'element-plus']
+          }
+        }
+      }
+    },
 });
