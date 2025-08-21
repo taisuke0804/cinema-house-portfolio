@@ -15,18 +15,6 @@ Route::get('dashboard', function () {
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 
-// ------------------------------------------------------------------------------------------------
-/**
- * 管理者認証関連のルート
- * 管理者専用のログイン処理を設定
- */
-
-Route::prefix('admin')->name('admin')->group(function () {
-    Route::controller(AdminLoginController::class)->group(function () {
-        Route::get('login', 'showLoginForm')->name('login');
-    });
-});
-
 // Route::get('/test', function () {
 //     return Inertia::render('Test/Test');
 // })->name('test');
