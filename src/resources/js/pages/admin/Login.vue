@@ -29,7 +29,7 @@ const submitAdminLogin = async(formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
-      AdminLoginForm.post(route('temp'), {
+      AdminLoginForm.post(route('admin.login.attempt'), {
         preserveState: true, //ページコンポーネントを再描画 入力値を保持
         onFinish: () => {
           AdminLoginForm.password = '' //リクエスト終了時にパスワード欄をリセット
@@ -66,12 +66,21 @@ const submitAdminLogin = async(formEl: FormInstance | undefined) => {
         <el-form-item label="パスワード" prop="password">
           <el-input type="password" v-model="AdminLoginForm.password" show-password placeholder="パスワードを入力" autocomplete="off" />
         </el-form-item>
-  
+
+        <el-alert v-if="Object.keys(AdminLoginForm.errors).length" title="入力に不備があります。下記をご確認ください。" type="error" show-icon
+          :closable="false">
+          <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+            <li v-for="(message, field) in AdminLoginForm.errors" :key="field">
+              {{ message }}
+            </li>
+          </ul>
+        </el-alert>
+
         <!-- AdminLoginForm.processing 送信中かどうか -->
         <el-button 
           type="primary" 
           @click="submitAdminLogin(adminLoginFormRef)" 
-          class="w-full"
+          class="w-full mt-5"
           native-type="submit"
           :loading="AdminLoginForm.processing"
         >
