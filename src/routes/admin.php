@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Admin\AdminLoginController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 
 // ------------------------------------------------------------------------------------------------
 /**
@@ -17,4 +18,10 @@ Route::middleware(['web', 'admin'])->group(function () {
         Route::get('login', 'showLoginForm')->name('login');
         Route::post('loginAttempt', 'login')->name('login.attempt');
     });
+
+    Route::middleware(['auth:admin'])->group(function () {
+        Route::post('logout', [AdminLoginController::class, 'logout'])->name('logout');
+        Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    });
+
 });

@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class AdminLoginRequest extends FormRequest
 {
@@ -25,5 +27,18 @@ class AdminLoginRequest extends FormRequest
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string', 'min:8'],
         ];
+    }
+
+    /**
+     * リクエストに含まれる認証情報を使用して管理者ユーザーを認証します
+     * 
+     * 認証に失敗した場合、ValidationException をスロー
+     */
+    public function authenticate(): void
+    {
+        // 管理者adminとして認証資格があるかどうかをチェックし認証
+        if (!Auth::guard('admin')->attempt($this->only('email', 'password'))) {
+            throw ValidationException::withMessages(['failed' => __('auth.failed')]);
+        }
     }
 }
