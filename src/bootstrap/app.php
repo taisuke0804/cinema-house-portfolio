@@ -42,11 +42,21 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
 
+        // 認証されてないユーザーのリダイレクト先を分岐
         $middleware->redirectGuestsTo(function (Request $request) {
             if ($request->routeIs('admin.*')) {
                 return route('admin.login');
             } else {
                 return route('login');
+            }
+        });
+
+        // 認証したユーザーのリダイレクト先を分岐
+        $middleware->redirectUsersTo(function (Request $request) {
+            if ($request->routeIs('admin.*')) {
+                return route('admin.dashboard');
+            } else {
+                return route('dashboard');
             }
         });
         
