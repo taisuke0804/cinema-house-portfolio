@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { ElButton } from 'element-plus'
-import { Link, router } from '@inertiajs/vue3'
+import { computed } from 'vue'
+import { Link, router, usePage } from '@inertiajs/vue3'
+
+// 管理者の名前を取得
+const page = usePage()
+const admin = computed(() => page.props.auth.admin)
 
 const adminLogout = (): void => {
   router.visit(route('admin.logout'), {
@@ -25,7 +30,7 @@ const adminLogout = (): void => {
     </div>
 
     <div class="flex items-center space-x-4 text-sm">
-      <span>管理者: 管理者太郎</span>
+      <span>管理者: {{ admin.name }}</span>
       <el-button size="small" type="info" plain v-on:click="adminLogout">ログアウト</el-button>
     </div>
   </header>

@@ -3,6 +3,7 @@ import type { Config } from 'ziggy-js';
 
 export interface Auth {
     user: User;
+    admin: Admin; // 管理者用の型定義を追記
 }
 
 export interface BreadcrumbItem {
@@ -26,6 +27,17 @@ export type AppPageProps<T extends Record<string, unknown> = Record<string, unkn
 };
 
 export interface User {
+    id: number;
+    name: string;
+    email: string;
+    avatar?: string;
+    email_verified_at: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
+// Adminの型設計を追記
+export interface Admin {
     id: number;
     name: string;
     email: string;
