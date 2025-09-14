@@ -1,5 +1,11 @@
 <script setup lang="ts">
 import { Head, router  } from '@inertiajs/vue3'
+import AdminLayout from '@/layouts/AdminLayout.vue'
+
+// レイアウトを適用
+defineOptions({
+  layout: AdminLayout
+})
 
 const adminLogout = (): void => {
   router.visit(route('admin.logout'), {
