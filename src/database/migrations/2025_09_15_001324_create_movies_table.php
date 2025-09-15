@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('movies', function (Blueprint $table) {
             $table->id();
             $table->string('title', 100)->comment('映画のタイトル');
-            $table->unsignedTinyInteger('genre')->comment('ジャンル'); 
+            $table->unsignedTinyInteger('genre')->comment('ジャンル'); // 負の値を扱わない整数値
             $table->text('description')->nullable()->comment('映画の説明');
             $table->timestamps();
         });
