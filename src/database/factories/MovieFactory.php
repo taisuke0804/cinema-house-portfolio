@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Enums\Genre;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Movie>
@@ -18,7 +19,7 @@ class MovieFactory extends Factory
     {
         return [
             'title' => fake()->sentence(3),
-            'genre' => $this->faker->numberBetween(0, 5),
+            'genre' => fake()->randomElement(Genre::cases())->value,
             'description' => fake()->paragraph(3),
         ];
     }
