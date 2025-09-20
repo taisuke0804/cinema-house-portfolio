@@ -19,6 +19,11 @@ class MovieService
             ->orderBy('created_at', 'desc')
             ->paginate(10)->withQueryString(); // クエリ文字列値をペジネーションリンクに追加する(検索用)
         
+        $movies->transform(function ($movie) {
+            $movie->genre_label = $movie->genre->getLabel(); // ジャンルのラベル取得
+            return $movie;
+        });
+
         return $movies;
     }
 }

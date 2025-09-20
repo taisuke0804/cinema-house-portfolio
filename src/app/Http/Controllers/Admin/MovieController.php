@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\Admin\MovieService;
+use Inertia\Inertia;
 
 class MovieController extends Controller
 {
@@ -22,6 +23,9 @@ class MovieController extends Controller
     public function index(Request $request)
     {
         $movies = $this->movieService->getMovies($request);
-        dd($movies);
+        
+        return Inertia::render('admin/movies/Index', [
+            'movies' => $movies,
+        ]);
     }
 }
