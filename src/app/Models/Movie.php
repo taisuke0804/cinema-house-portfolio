@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\Genre;
 
 class Movie extends Model
 {
@@ -15,4 +16,11 @@ class Movie extends Model
         'genre',
         'description',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'genre' => Genre::class,
+        ];
+    }
 }

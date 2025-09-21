@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Admin\AdminLoginController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\MovieController;
 
 // ------------------------------------------------------------------------------------------------
 /**
@@ -22,6 +23,10 @@ Route::middleware(['web', 'admin'])->group(function () {
     Route::middleware(['auth:admin'])->group(function () {
         Route::post('logout', [AdminLoginController::class, 'logout'])->name('logout');
         Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+        Route::controller(MovieController::class)->group(function () {
+            Route::get('movies', 'index')->name('movies.index');
+        });
     });
 
 });
