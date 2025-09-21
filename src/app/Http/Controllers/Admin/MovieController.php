@@ -27,6 +27,8 @@ class MovieController extends Controller
         
         return Inertia::render('admin/movies/Index', [
             'movies' => $movies,
+            'filters' => $request->only(['title', 'genre', 'description', 'search_type']),
+            'genres' => \App\Enums\Genre::options(),
         ]);
     }
 }
