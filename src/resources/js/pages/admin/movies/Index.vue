@@ -36,6 +36,45 @@ const handlePageChange = (page: number) => {
   <div class="p-6">
     <h1 class="text-2xl font-bold mb-6">映画一覧</h1>
 
+    <el-card class="mb-6">
+      <template #header>
+        <span>検索条件を表示</span>
+      </template>
+
+      <el-form :inline="true" >
+        <el-form-item label="タイトル" >
+          <el-input style="width: 800px;" placeholder="タイトルを入力" clearable />
+        </el-form-item>
+
+        <el-form-item label="タイトル検索方法">
+          <el-radio-group >
+            <el-radio label="partial">あいまい</el-radio>
+            <el-radio label="exact">完全一致</el-radio>
+          </el-radio-group>
+        </el-form-item>
+  
+        <el-form-item label="ジャンル">
+          <el-select placeholder="すべて" clearable style="width: 180px">
+            <el-option label="すべて" value="" />
+            <el-option label="アクション" :value="1" />
+            <el-option label="コメディ" :value="2" />
+            <el-option label="ドラマ" :value="3" />
+          </el-select>
+        </el-form-item>
+  
+        <el-form-item label="説明文">
+          <el-input style="width: 1000px;" placeholder="説明文を入力" clearable />
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="primary" >検索</el-button>
+          <el-button >リセット</el-button>
+        </el-form-item>
+
+      </el-form>
+
+    </el-card>
+
     <el-table :data="props.movies.data" border stripe class="w-full">
       <el-table-column prop="title" label="タイトル" min-width="200" />
       <el-table-column prop="genre_label" label="ジャンル" min-width="120" />
