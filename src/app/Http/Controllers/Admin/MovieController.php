@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\Admin\MovieService;
 use Inertia\Inertia;
+use App\Http\Requests\MovieSearchRequest;
 
 class MovieController extends Controller
 {
@@ -20,7 +21,7 @@ class MovieController extends Controller
     /**
      * 映画の一覧を表示
      */
-    public function index(Request $request)
+    public function index(MovieSearchRequest $request)
     {
         $movies = $this->movieService->getMovies($request);
         
