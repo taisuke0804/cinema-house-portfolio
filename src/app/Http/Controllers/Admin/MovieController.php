@@ -31,4 +31,12 @@ class MovieController extends Controller
             'genres' => \App\Enums\Genre::options(),
         ]);
     }
+
+    /**
+     * 映画の新規登録画面を表示
+     */
+    public function create()
+    {
+        return Inertia::render('admin/movies/Create');
+    }
 }

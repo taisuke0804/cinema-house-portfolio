@@ -73,7 +73,12 @@ const handlePageChange = (page: number) => {
   <Head title="映画一覧" />
   
   <div class="p-6">
-    <h1 class="text-2xl font-bold mb-6">映画一覧</h1>
+    <div class="flex justify-between">
+      <h1 class="text-2xl font-bold mb-6">映画一覧</h1>
+      <Link :href="route('admin.movies.create')">
+        <el-button type="success">新規登録</el-button>
+      </Link>
+    </div>
 
     <el-card class="mb-6">
       <template #header>

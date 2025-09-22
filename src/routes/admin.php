@@ -26,6 +26,7 @@ Route::middleware(['web', 'admin'])->group(function () {
 
         Route::controller(MovieController::class)->group(function () {
             Route::get('movies', 'index')->name('movies.index');
+            Route::get('movies/create', 'create')->name('movies.create');
         });
     });
 
