@@ -37,6 +37,8 @@ class MovieController extends Controller
      */
     public function create()
     {
-        return Inertia::render('admin/movies/Create');
+        return Inertia::render('admin/movies/Create', [
+            'genres' => \App\Enums\Genre::options(),
+        ]);
     }
 }
