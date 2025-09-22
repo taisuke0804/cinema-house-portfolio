@@ -26,6 +26,8 @@ const props = defineProps<{
   genres: { value: number; label: string }[]
 }>()
 
+const confirmDialogVisible = ref(false)
+
 // バリデーション
 const storeMovieRules: FormRules<MovieForm> = {
   title: [
@@ -39,14 +41,21 @@ const storeMovieRules: FormRules<MovieForm> = {
   ],
 }
 
-const submitMovieStore = async(formEl: FormInstance | undefined) => {
+// 登録ボタンクリック時 → バリデーション → OKならモーダル表示
+const handleOpenConfirm = async(formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
-
+      confirmDialogVisible.value = true
     }
   })
 }
+
+// モーダルの送信処理
+const submitMovieStore = () => {
+  console.log('登録POST処理')
+}
+
 </script>
 
 <template>
@@ -60,7 +69,6 @@ const submitMovieStore = async(formEl: FormInstance | undefined) => {
       ref="movieFormRef"
       :model="movieForm" 
       :rules="storeMovieRules"
-      @submit.prevent="submitMovieStore(movieFormRef)" 
       class="space-y-6"
     >
       <!-- タイトル -->
@@ -95,12 +103,28 @@ const submitMovieStore = async(formEl: FormInstance | undefined) => {
       <div class="flex justify-end">
         <el-button 
           type="primary" 
-          native-type="submit" 
           :loading="movieForm.processing"
+          @click="handleOpenConfirm(movieFormRef)"
         >
           登録
         </el-button>
       </div>
+
+      <!-- モーダル -->
+      <el-dialog
+        v-model="confirmDialogVisible"
+        title="映画新規登録"
+        width="400px"
+        :show-close="false"
+      >
+        <p>入力内容を送信してよろしいですか？</p>
+
+        <template #footer>
+          <el-button @click="confirmDialogVisible = false">キャンセル</el-button>
+          <el-button type="primary" @click="submitMovieStore" >送信</el-button>
+        </template>
+      </el-dialog>
+
     </el-form>
   </div>
 </template>
