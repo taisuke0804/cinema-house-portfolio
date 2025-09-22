@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { Head, useForm } from '@inertiajs/vue3'
 import AdminLayout from '@/layouts/AdminLayout.vue'
+import type { FormInstance, FormRules } from 'element-plus'
+import { ref } from 'vue'
 
 defineOptions({
   layout: AdminLayout
 })
+
+const movieFormRef = ref<FormInstance>()
 
 interface MovieForm {
   title: string
@@ -12,7 +16,6 @@ interface MovieForm {
   description: string
 }
 
-// フォーム
 const movieForm = useForm<MovieForm>({
   title: '',
   genre: '',
@@ -23,9 +26,26 @@ const props = defineProps<{
   genres: { value: number; label: string }[]
 }>()
 
-// 送信処理
-const submitMovieStore = () => {
-  console.log('submit')
+// バリデーション
+const storeMovieRules: FormRules<MovieForm> = {
+  title: [
+    { required: true, message: 'タイトルは必須項目です', trigger: 'blur' },
+  ],
+  genre: [
+    { required: true, message: 'ジャンルは必須項目です', trigger: 'change' },
+  ],
+  description: [
+    { required: true, message: '説明文は必須項目です', trigger: 'blur' },
+  ],
+}
+
+const submitMovieStore = async(formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate((valid, fields) => {
+    if (valid) {
+
+    }
+  })
 }
 </script>
 
@@ -35,14 +55,21 @@ const submitMovieStore = () => {
   <div class="p-6 max-w-4xl mx-auto">
     <h1 class="text-2xl font-bold mb-6">映画新規登録</h1>
 
-    <el-form label-position="top" @submit.prevent="submitMovieStore" class="space-y-6">
+    <el-form 
+      label-position="top" 
+      ref="movieFormRef"
+      :model="movieForm" 
+      :rules="storeMovieRules"
+      @submit.prevent="submitMovieStore(movieFormRef)" 
+      class="space-y-6"
+    >
       <!-- タイトル -->
-      <el-form-item label="映画タイトル">
+      <el-form-item label="映画タイトル" prop="title" >
         <el-input v-model="movieForm.title" placeholder="タイトルを入力" clearable />
       </el-form-item>
 
       <!-- ジャンル -->
-      <el-form-item label="ジャンル">
+      <el-form-item label="ジャンル" prop="genre" >
         <el-select v-model="movieForm.genre" placeholder="ジャンルを選択" clearable class="w-full">
           <el-option
             v-for="genre in props.genres"
@@ -54,7 +81,7 @@ const submitMovieStore = () => {
       </el-form-item>
 
       <!-- 説明文 -->
-      <el-form-item label="説明文">
+      <el-form-item label="説明文" prop="description" >
         <el-input
           type="textarea"
           v-model="movieForm.description"
