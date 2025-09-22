@@ -53,7 +53,11 @@ const handleOpenConfirm = async(formEl: FormInstance | undefined) => {
 
 // モーダルの送信処理
 const submitMovieStore = () => {
-  console.log('登録POST処理')
+  movieForm.post(route('admin.movies.store'), {
+    onSuccess: () => {
+      confirmDialogVisible.value = false
+    },
+  })
 }
 
 </script>

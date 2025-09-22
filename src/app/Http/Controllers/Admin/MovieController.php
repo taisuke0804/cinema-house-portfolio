@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Services\Admin\MovieService;
 use Inertia\Inertia;
 use App\Http\Requests\MovieSearchRequest;
+use App\Http\Requests\Admin\StoreMovieRequest;
 
 class MovieController extends Controller
 {
@@ -40,5 +41,13 @@ class MovieController extends Controller
         return Inertia::render('admin/movies/Create', [
             'genres' => \App\Enums\Genre::options(),
         ]);
+    }
+
+    /**
+     * 映画の新規登録処理
+     */
+    public function store(StoreMovieRequest $request)
+    {
+        dd($request);
     }
 }
