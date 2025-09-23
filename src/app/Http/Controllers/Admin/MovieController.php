@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Services\Admin\MovieService;
 use Inertia\Inertia;
 use App\Http\Requests\MovieSearchRequest;
+use App\Http\Requests\Admin\StoreMovieRequest;
 
 class MovieController extends Controller
 {
@@ -30,5 +31,25 @@ class MovieController extends Controller
             'filters' => $request->only(['title', 'genre', 'description', 'search_type']),
             'genres' => \App\Enums\Genre::options(),
         ]);
+    }
+
+    /**
+     * 映画の新規登録画面を表示
+     */
+    public function create()
+    {
+        return Inertia::render('admin/movies/Create', [
+            'genres' => \App\Enums\Genre::options(),
+        ]);
+    }
+
+    /**
+     * 映画の新規登録処理
+     */
+    public function store(StoreMovieRequest $request)
+    {
+        $this->movieService->storeMovie($request->validated());
+
+        return redirect()->route('admin.movies.index')->with('success', '映画の新規登録が完了しました');
     }
 }

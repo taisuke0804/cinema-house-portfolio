@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3'
+import { Head, Link, router, usePage  } from '@inertiajs/vue3'
 import AdminLayout from '@/layouts/AdminLayout.vue'
-import { reactive, ref, watch } from 'vue'
+import { reactive, ref, watch, computed } from 'vue'
 
 interface SearchForm {
   title: string
@@ -73,7 +73,21 @@ const handlePageChange = (page: number) => {
   <Head title="映画一覧" />
   
   <div class="p-6">
-    <h1 class="text-2xl font-bold mb-6">映画一覧</h1>
+    <div class="flex justify-between">
+      <h1 class="text-2xl font-bold mb-6">映画一覧</h1>
+      <Link :href="route('admin.movies.create')">
+        <el-button type="success">新規登録</el-button>
+      </Link>
+    </div>
+
+    <!-- フラッシュメッセージ -->
+    <el-alert
+      v-if="$page.props.flash.success"
+      :title="$page.props.flash.success"
+      type="success"
+      show-icon
+      closable
+    />
 
     <el-card class="mb-6">
       <template #header>
@@ -140,3 +154,8 @@ const handlePageChange = (page: number) => {
     </div>
   </div>
 </template>
+<style scoped>
+.el-alert {
+  margin-bottom: 4px;
+}
+</style>

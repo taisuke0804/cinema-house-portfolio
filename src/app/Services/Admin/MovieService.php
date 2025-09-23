@@ -32,6 +32,14 @@ class MovieService
     }
 
     /**
+     * 映画の新規登録
+     */
+    public function storeMovie(array $validated): void
+    {
+        Movie::create($validated);
+    }
+
+    /**
      * 映画情報を検索するクエリを生成
      */
     private function searchMoviesQuery(Builder $query, Request $request): Builder
