@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3'
+import { Head, Link, router, usePage  } from '@inertiajs/vue3'
 import AdminLayout from '@/layouts/AdminLayout.vue'
-import { reactive, ref, watch } from 'vue'
+import { reactive, ref, watch, computed } from 'vue'
 
 interface SearchForm {
   title: string
@@ -78,6 +78,17 @@ const handlePageChange = (page: number) => {
       <Link :href="route('admin.movies.create')">
         <el-button type="success">新規登録</el-button>
       </Link>
+    </div>
+
+    <!-- フラッシュメッセージ -->
+    <div class="mb-4">
+      <el-alert
+        v-if="$page.props.flash.success"
+        :title="$page.props.flash.success"
+        type="success"
+        show-icon
+        closable
+      />
     </div>
 
     <el-card class="mb-6">
