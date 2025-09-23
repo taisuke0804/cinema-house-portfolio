@@ -17,6 +17,8 @@ return new class extends Migration
             $table->dateTime('start_time'); // 上映開始時間
             $table->dateTime('end_time'); // 上映終了時間
             $table->timestamps();
+
+            $table->unique(['movie_id', 'start_time']); // 同じ映画で同じ開始時刻の重複は制御
         });
     }
 
