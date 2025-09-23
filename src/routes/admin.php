@@ -5,6 +5,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\Admin\AdminLoginController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\MovieController;
+use App\Http\Controllers\Admin\ScreeningCalendarController;
 
 // ------------------------------------------------------------------------------------------------
 /**
@@ -28,6 +29,10 @@ Route::middleware(['web', 'admin'])->group(function () {
             Route::get('movies', 'index')->name('movies.index');
             Route::get('movies/create', 'create')->name('movies.create');
             Route::post('movies/store', 'store')->name('movies.store');
+        });
+        
+        Route::controller(ScreeningCalendarController::class)->group(function () {
+            Route::get('screenings/calendar', 'index')->name('screenings.calendar');
         });
     });
 

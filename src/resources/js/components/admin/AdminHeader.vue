@@ -24,7 +24,7 @@ const adminLogout = (): void => {
   
       <nav class="space-x-6 text-sm font-medium hidden md:flex">
         <Link :href="route('admin.movies.index')" class="hover:underline">映画一覧</Link >
-        <Link href="#" class="hover:underline">上映カレンダー</Link>
+        <Link :href="route('admin.screenings.calendar')" class="hover:underline">上映カレンダー</Link>
         <Link href="#" class="hover:underline">ユーザー管理</Link>
       </nav>
     </div>
