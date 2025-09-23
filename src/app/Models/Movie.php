@@ -23,4 +23,9 @@ class Movie extends Model
             'genre' => Genre::class,
         ];
     }
+
+    public function screenings()
+    {
+        return $this->hasMany(Screening::class);
+    }
 }
