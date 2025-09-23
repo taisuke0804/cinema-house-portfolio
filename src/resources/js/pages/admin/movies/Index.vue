@@ -81,15 +81,13 @@ const handlePageChange = (page: number) => {
     </div>
 
     <!-- フラッシュメッセージ -->
-    <div class="mb-4">
-      <el-alert
-        v-if="$page.props.flash.success"
-        :title="$page.props.flash.success"
-        type="success"
-        show-icon
-        closable
-      />
-    </div>
+    <el-alert
+      v-if="$page.props.flash.success"
+      :title="$page.props.flash.success"
+      type="success"
+      show-icon
+      closable
+    />
 
     <el-card class="mb-6">
       <template #header>
@@ -156,3 +154,8 @@ const handlePageChange = (page: number) => {
     </div>
   </div>
 </template>
+<style scoped>
+.el-alert {
+  margin-bottom: 4px;
+}
+</style>

@@ -57,6 +57,9 @@ const submitMovieStore = () => {
     onSuccess: () => {
       confirmDialogVisible.value = false
     },
+    onError: () => {
+      confirmDialogVisible.value = false // バックエンド側のバリデーションエラー発生時にモーダルを閉じる
+    },
   })
 }
 
@@ -67,6 +70,15 @@ const submitMovieStore = () => {
   
   <div class="p-6 max-w-4xl mx-auto">
     <h1 class="text-2xl font-bold mb-6">映画新規登録</h1>
+
+    <!-- バックエンド側のバリデーションエラーメッセージ -->
+    <el-alert v-if="Object.keys(movieForm.errors).length" title="入力に不備があります。下記をご確認ください。" type="error" show-icon :closable="false" >
+      <ul class="text-sm text-red-700 list-disc list-inside">
+        <li v-for="(message, field) in movieForm.errors" :key="field">
+          {{ message }}
+        </li>
+      </ul>
+    </el-alert>
 
     <el-form 
       label-position="top" 
@@ -132,3 +144,8 @@ const submitMovieStore = () => {
     </el-form>
   </div>
 </template>
+<style scoped>
+.el-alert {
+  margin-bottom: 8px;
+}
+</style>
