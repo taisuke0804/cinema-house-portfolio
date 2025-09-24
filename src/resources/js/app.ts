@@ -8,6 +8,7 @@ import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
+import ja from 'element-plus/es/locale/lang/ja'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -18,7 +19,9 @@ createInertiaApp({
         createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
-            .use(ElementPlus)
+            .use(ElementPlus, {
+              locale: ja // ElementPlusのlacaleを日本語に設定
+            })
             .mount(el);
     },
     progress: {
