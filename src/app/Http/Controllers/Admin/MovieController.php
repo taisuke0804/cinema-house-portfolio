@@ -52,4 +52,12 @@ class MovieController extends Controller
 
         return redirect()->route('admin.movies.index')->with('success', '映画の新規登録が完了しました');
     }
+
+    /**
+     * 映画の詳細を表示
+     */
+    public function show($id)
+    {
+        dd($id);
+    }
 }
