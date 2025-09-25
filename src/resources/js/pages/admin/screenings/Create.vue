@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { Head, useForm } from '@inertiajs/vue3'
 import AdminLayout from '@/layouts/AdminLayout.vue'
+import type { FormInstance, FormRules } from 'element-plus'
+import { ref } from 'vue'
 
 defineOptions({
   layout: AdminLayout
 })
+
+const screeningFormRef = ref<FormInstance>()
 
 const props = defineProps<{
   movie: {
@@ -27,8 +31,39 @@ const screeningForm = useForm<ScreeningForm>({
   end_time: '',
 })
 
-const submit = () => {
-  console.log('confirm')
+const storeScreeningRules: FormRules<ScreeningForm> = {
+  screening_date: [
+    { required: true, message: '上映日付は必須項目です', trigger: 'blur' },
+  ],
+  start_time: [
+    { required: true, message: '上映開始時間は必須項目です', trigger: 'blur' },
+  ],
+  end_time: [
+    { required: true, message: '上映終了時間は必須項目です', trigger: 'blur' },
+  ],
+}
+
+const confirmDialogVisible = ref(false)
+
+const handleOpenConfirm = async(formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate((valid, fields) => {
+    if (valid) {
+      confirmDialogVisible.value = true
+    }
+  })
+}
+
+// モーダルの送信処理
+const submitScreeningStore = () => {
+  screeningForm.post('#', {
+    onSuccess: () => {
+      confirmDialogVisible.value = false
+    },
+    onError: () => {
+      confirmDialogVisible.value = false // バックエンド側のバリデーションエラー発生時にモーダルを閉じる
+    },
+  })
 }
 
 </script>
@@ -38,12 +73,18 @@ const submit = () => {
   <div class="max-w-3xl mx-auto py-8">
     <h1 class="text-2xl font-bold mb-6">上映スケジュール新規登録</h1>
 
-    <el-form label-position="top" class="space-y-6" @submit.prevent="submit">
+    <el-form 
+      label-position="top" 
+      class="space-y-6" 
+      ref="screeningFormRef"
+      :model="screeningForm"
+      :rules="storeScreeningRules"
+    >
       <el-form-item label="映画タイトル">
         <el-input :model-value="props.movie.title" disabled />
       </el-form-item>
 
-      <el-form-item label="上映日付">
+      <el-form-item label="上映日付" prop="screening_date" >
         <el-date-picker
           v-model="screeningForm.screening_date"
           type="date"
@@ -54,7 +95,7 @@ const submit = () => {
         />
       </el-form-item>
 
-      <el-form-item label="上映開始時間">
+      <el-form-item label="上映開始時間" prop="start_time" >
         <div class="flex gap-2 w-1/2">
           <el-time-select
             v-model="screeningForm.start_time"
@@ -67,7 +108,7 @@ const submit = () => {
         </div>
       </el-form-item>
 
-      <el-form-item label="上映終了時間">
+      <el-form-item label="上映終了時間" prop="end_time" >
         <div class="flex gap-2 w-1/2">
           <el-time-select
             v-model="screeningForm.end_time"
@@ -81,10 +122,32 @@ const submit = () => {
       </el-form-item>
 
       <div class="flex justify-start mt-8">
-        <el-button type="primary" size="large" @click="submit" :loading="screeningForm.processing">
+        <el-button 
+          type="primary" 
+          size="large" 
+          @click="handleOpenConfirm(screeningFormRef)" 
+          :loading="screeningForm.processing"
+        >
           登録
         </el-button>
       </div>
+
+      <!-- モーダル -->
+      <el-dialog
+        v-model="confirmDialogVisible"
+        title="上映スケジュール登録確認"
+        width="400px"
+        :show-close="false"
+      >
+        <p>入力内容を送信してよろしいですか？</p>
+
+        <template #footer>
+          <el-button @click="confirmDialogVisible = false">キャンセル</el-button>
+          <el-button type="primary" @click="submitScreeningStore" >送信</el-button>
+        </template>
+
+      </el-dialog>
+
     </el-form>
   </div>
 </template>
