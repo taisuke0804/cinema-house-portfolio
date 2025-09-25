@@ -56,7 +56,7 @@ const handleOpenConfirm = async(formEl: FormInstance | undefined) => {
 
 // モーダルの送信処理
 const submitScreeningStore = () => {
-  screeningForm.post('#', {
+  screeningForm.post(route('admin.screenings.store', props.movie.id), {
     onSuccess: () => {
       confirmDialogVisible.value = false
     },
@@ -73,6 +73,15 @@ const submitScreeningStore = () => {
   <div class="max-w-3xl mx-auto py-8">
     <h1 class="text-2xl font-bold mb-6">上映スケジュール新規登録</h1>
 
+    <!-- バックエンド側のバリデーションエラーメッセージ -->
+    <el-alert v-if="Object.keys(screeningForm.errors).length" title="入力に不備があります。下記をご確認ください。" type="error" show-icon :closable="false" >
+      <ul class="text-sm text-red-700 list-disc list-inside">
+        <li v-for="(message, field) in screeningForm.errors" :key="field">
+          {{ message }}
+        </li>
+      </ul>
+    </el-alert>
+    
     <el-form 
       label-position="top" 
       class="space-y-6" 
@@ -151,3 +160,8 @@ const submitScreeningStore = () => {
     </el-form>
   </div>
 </template>
+<style scoped>
+:deep(.el-alert) {
+  margin-bottom: 8px;
+}
+</style>

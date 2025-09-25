@@ -8,6 +8,7 @@ use App\Models\Screening;
 use App\Models\Movie;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Http\Requests\Admin\StoreScreeningRequest;
 
 class ScreeningCalendarController extends Controller
 {
@@ -37,5 +38,13 @@ class ScreeningCalendarController extends Controller
                 'title' => $movie->title,
             ],
         ]);
+    }
+
+    /**
+     * 上映スケジュールの新規登録処理
+     */
+    public function store(StoreScreeningRequest $request)
+    {
+        dd($request);
     }
 }
