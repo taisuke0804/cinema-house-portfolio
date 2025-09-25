@@ -57,7 +57,7 @@ const props = defineProps<{
         <!-- <el-button type="danger">削除</el-button> -->
 
         <!-- 上映スケジュール登録ボタン -->
-        <Link href="#">
+        <Link :href="route('admin.screenings.create', props.movie.id)">
           <el-button type="primary">上映スケジュールを登録</el-button>
         </Link>
       </div>

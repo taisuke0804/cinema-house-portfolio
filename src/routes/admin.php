@@ -34,6 +34,7 @@ Route::middleware(['web', 'admin'])->group(function () {
         
         Route::controller(ScreeningCalendarController::class)->group(function () {
             Route::get('screenings/calendar', 'index')->name('screenings.calendar');
+            Route::get('movies/{movie_id}/screenings/create', 'create')->name('screenings.create');
         });
     });
 
