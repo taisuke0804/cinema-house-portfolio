@@ -40,6 +40,17 @@ class MovieService
     }
 
     /**
+     * 映画の詳細を取得
+     */
+    public function getMovieById(int $id): Movie
+    {
+        $movie = Movie::select('id', 'title', 'description', 'genre')
+            ->findOrFail($id);
+
+        return $movie;
+    }
+
+    /**
      * 映画情報を検索するクエリを生成
      */
     private function searchMoviesQuery(Builder $query, Request $request): Builder

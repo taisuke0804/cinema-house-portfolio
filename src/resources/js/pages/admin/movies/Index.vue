@@ -136,7 +136,7 @@ const handlePageChange = (page: number) => {
       <el-table-column prop="description" label="説明文" min-width="300" show-overflow-tooltip />
       <el-table-column label="操作" width="150">
         <template #default="scope">
-          <Link href="#">
+          <Link :href="route('admin.movies.show', scope.row.id)" >
             <el-button type="primary" size="small">詳細</el-button>
           </Link>
         </template>
@@ -155,7 +155,7 @@ const handlePageChange = (page: number) => {
   </div>
 </template>
 <style scoped>
-.el-alert {
-  margin-bottom: 4px;
+:deep(.el-alert) {
+  margin-bottom: 8px;
 }
 </style>

@@ -37,6 +37,15 @@ const screeningsByDate = computed(() => {
   <div class="p-6">
     <h1 class="text-2xl font-bold mb-4">上映スケジュールカレンダー</h1>
 
+    <!-- フラッシュメッセージ -->
+    <el-alert
+      v-if="$page.props.flash.success"
+      :title="$page.props.flash.success"
+      type="success"
+      show-icon
+      closable
+    />
+
     <el-calendar v-model="selectedDate">
       <template #date-cell="{ data }" >
         <!-- 日付 -->
