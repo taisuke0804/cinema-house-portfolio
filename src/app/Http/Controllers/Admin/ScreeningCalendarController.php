@@ -9,9 +9,17 @@ use App\Models\Movie;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Http\Requests\Admin\StoreScreeningRequest;
+use App\Services\Admin\ScreeningService;
 
 class ScreeningCalendarController extends Controller
 {
+
+    private $screeningService;
+
+    public function __construct(ScreeningService $screeningService)
+    {
+        $this->screeningService = $screeningService;
+    }
 
     /**
      * カレンダー表示ページ.
@@ -45,6 +53,10 @@ class ScreeningCalendarController extends Controller
      */
     public function store(StoreScreeningRequest $request)
     {
-        dd($request);
+        $validated = $request->only('movie_id', 'screening_date', 'start_time', 'end_time');
+
+        $this->screeningService->storeScreening($validated);
+        
+        return redirect()->route('admin.screenings.calendar')->with('success', '上映スケジュール新規登録が完了しました');
     }
 }
