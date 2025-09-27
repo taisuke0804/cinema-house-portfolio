@@ -2,6 +2,8 @@
 
 namespace App\Services\Admin;
 use App\Models\Screening;
+use Illuminate\Support\Facades\DB;
+use App\Models\Seat;
 
 class ScreeningService
 {
@@ -17,6 +19,28 @@ class ScreeningService
         // DBに不要なフィールドを削除
         unset($validated['screening_date']);
 
-        Screening::create($validated);
+        DB::transaction(function () use ($validated) {
+            $screening = Screening::create($validated);
+
+            $rows = range('A', 'B');
+            $numbers = range(1, 10);
+
+            $seats = [];
+            foreach ($rows as $row) {
+                foreach ($numbers as $number) {
+                    $seats[] = [
+                        'screening_id' => $screening->id,
+                        'row' => $row,
+                        'number' => $number,
+                        'is_reserved' => false,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+            }
+
+            Seat::insert($seats);
+        });
+
     }
 }
