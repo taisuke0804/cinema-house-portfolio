@@ -5,7 +5,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\Admin\AdminLoginController;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome');
+    return Inertia::render('Index');
 })->name('home');
 
 Route::get('dashboard', function () {
