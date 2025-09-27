@@ -62,6 +62,7 @@ class ScreeningCalendarController extends Controller
 
     public function show(int $screening_id)
     {
-        dd($screening_id);
+        $screening = $this->screeningService->getScreeningDetails($screening_id);
+        dd($screening);
     }
 }
