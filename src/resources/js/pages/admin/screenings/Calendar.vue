@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AdminLayout from '@/layouts/AdminLayout.vue'
-import { Head } from '@inertiajs/vue3'
+import { Head, Link } from '@inertiajs/vue3'
 import { ref, computed } from 'vue'
 import dayjs from 'dayjs' // JavaScriptの日付処理・操作のライブラリ
 
@@ -70,9 +70,11 @@ const screeningsByDate = computed(() => {
                 上映時間： {{ dayjs(s.start_time).format('HH:mm') }} ～ {{ dayjs(s.end_time).format('HH:mm') }}
               </template>
 
-              <span class="cursor-pointer text-xs text-blue-600 underline">
-                {{ s.movie.title }}
-              </span>
+              <Link :href="route('admin.screenings.show', s.id)">
+                <span class="cursor-pointer text-xs text-blue-600 underline">
+                  {{ s.movie.title }}
+                </span>
+              </Link>
 
             </el-tooltip>
           </li>

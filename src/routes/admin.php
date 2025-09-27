@@ -36,6 +36,7 @@ Route::middleware(['web', 'admin'])->group(function () {
             Route::get('screenings/calendar', 'index')->name('screenings.calendar');
             Route::get('movies/{movie_id}/screenings/create', 'create')->name('screenings.create');
             Route::post('movies/{movie_id}/screenings', 'store')->name('screenings.store');
+            Route::get('screenings/{screening_id}', 'show')->name('screenings.show');
         });
     });
 
