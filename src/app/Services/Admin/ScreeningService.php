@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 use App\Models\Screening;
 use Illuminate\Support\Facades\DB;
 use App\Models\Seat;
+use Carbon\Carbon;
 
 class ScreeningService
 {
@@ -41,6 +42,45 @@ class ScreeningService
 
             Seat::insert($seats);
         });
+
+    }
+
+    /**
+     * 上映スケジュールの詳細情報を取得
+     */
+    public function getScreeningDetails(int $screening_id): array
+    {
+        $screening = Screening::with([
+            'movie:id,title,genre',
+            'seats.user:id,name',
+        ])
+        ->select('id', 'movie_id', 'start_time', 'end_time')
+        ->findOrFail($screening_id);
+
+        // 行ごとにグループ化
+        $groupedSeats = $screening->seats
+            ->groupBy('row')
+            // valuesメソッドはキーをリセット後、連続した整数にした新しいコレクションを返します。
+            ->map(fn($rowSeats) => $rowSeats->sortBy('number')->values());
+        
+            // 日付・時間フォーマット
+        $screening_date = Carbon::parse($screening->start_time)->format('Y年m月d日');
+        $start_time = Carbon::parse($screening->start_time)->format('H:i');
+        $end_time = Carbon::parse($screening->end_time)->format('H:i');
+
+        // Vueに渡すデータを加工して返却
+        return [
+            'screening_id' => $screening->id,
+            'screening_date' => $screening_date,
+            'start_time' => $start_time,
+            'end_time' => $end_time,
+            'movie' => [
+                'title' => $screening->movie->title,
+                'genre' => $screening->movie->genre,
+                'genre_label' => $screening->movie->genre->getLabel(),
+            ],
+            'seats' => $groupedSeats,
+        ];
 
     }
 }
