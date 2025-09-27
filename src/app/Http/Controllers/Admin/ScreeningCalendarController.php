@@ -60,9 +60,12 @@ class ScreeningCalendarController extends Controller
         return redirect()->route('admin.screenings.calendar')->with('success', '上映スケジュール新規登録が完了しました');
     }
 
-    public function show(int $screening_id)
+    public function show(int $screening_id): Response
     {
         $screening = $this->screeningService->getScreeningDetails($screening_id);
-        dd($screening);
+        
+        return Inertia::render('admin/screenings/Show', [
+            'screening' => $screening, 
+        ]);
     }
 }
