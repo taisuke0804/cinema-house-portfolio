@@ -28,4 +28,17 @@ class ScreeningController extends Controller
             'screenings' => $screenings,
         ]);
     }
+
+    /**
+     * 上映スケジュールの詳細情報を表示するページ
+     */
+    public function show(int $screening_id)
+    {
+        $screening = $this->screeningService->getScreeningDetails($screening_id);
+
+        // dd($screening);
+        return Inertia::render('user/screenings/Show', [
+            'screening' => $screening, 
+        ]);
+    }
 }

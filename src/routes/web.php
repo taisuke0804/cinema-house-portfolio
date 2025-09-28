@@ -22,6 +22,7 @@ Route::prefix('user')->name('user.')->middleware(['web'])->group(function () {
     Route::middleware(['auth:web'])->group(function () {
         Route::controller(ScreeningController::class)->group(function () {
             Route::get('screenings', 'index')->name('screenings');
+            Route::get('screenings/{screening_id}', 'show')->name('screenings.show');
         });
     });
 });

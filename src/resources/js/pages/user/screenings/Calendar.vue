@@ -70,7 +70,7 @@ const screeningsByDate = computed(() => {
                 上映時間： {{ dayjs(s.start_time).format('HH:mm') }} ～ {{ dayjs(s.end_time).format('HH:mm') }}
               </template>
 
-              <Link href="#">
+              <Link :href="route('user.screenings.show', s.id)">
                 <span class="cursor-pointer text-xs text-blue-600 underline">
                   {{ s.movie.title }}
                 </span>
