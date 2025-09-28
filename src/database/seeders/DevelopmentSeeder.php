@@ -29,6 +29,8 @@ class DevelopmentSeeder extends Seeder
             'remember_token' => Str::random(10),
         ]);
 
+        User::factory()->count(50)->create();
+
         $this->call([
             MovieSeeder::class,
             ScreeningSeeder::class,
