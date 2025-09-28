@@ -12,7 +12,7 @@ import { Head, Link } from '@inertiajs/vue3'
       </h1>
       <p class="text-xl">ようこそ、映画の世界へ</p>
 
-      <Link :href="route('login')" class="inline-block pt-8 pb-20">
+      <Link :href="route('user.login')" class="inline-block pt-8 pb-20">
         <el-button type="primary" size="large">
           ログイン
         </el-button>
