@@ -23,7 +23,7 @@ const userLogout = (): void => {
 
       <nav class="space-x-6 text-sm font-medium hidden md:flex">
         <Link :href="route('user.screenings')" class="hover:underline">上映スケジュール</Link>
-        <Link href="#" class="hover:underline">座席予約一覧</Link>
+        <Link :href="route('user.reservations.index')" class="hover:underline">座席予約一覧</Link>
       </nav>
 
     </div>
