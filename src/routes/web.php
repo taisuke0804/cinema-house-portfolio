@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\User\ScreeningController;
+use App\Http\Controllers\User\SeatController;
 
 Route::get('/', function () {
     return Inertia::render('Index');
@@ -23,6 +24,10 @@ Route::prefix('user')->name('user.')->middleware(['web'])->group(function () {
         Route::controller(ScreeningController::class)->group(function () {
             Route::get('screenings', 'index')->name('screenings');
             Route::get('screenings/{screening_id}', 'show')->name('screenings.show');
+        });
+
+        Route::controller(SeatController::class)->group(function () {
+            Route::post('seats/reserve', 'reserve')->name('seats.reserve');
         });
     });
 });

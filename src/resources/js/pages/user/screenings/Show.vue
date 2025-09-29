@@ -69,7 +69,11 @@ const handleOpenConfirm = () => {
 // 追加: 予約POST
 const reserveSeat = () => {
   if (reserveForm.seat_id == null) return
-  console.log('reserve')
+  reserveForm.post(route('user.seats.reserve'), {
+    onSuccess: () => {
+      confirmDialogVisible.value = false
+    }
+  })
 }
 
 </script>
