@@ -44,6 +44,10 @@ class SeatController extends Controller
      */
     public function index()
     {
-        return Inertia::render('user/reservations/Index');
+        $authReserveList = $this->seatReservationService->getReserveList();
+
+        return Inertia::render('user/reservations/Index', [
+            'authReserveList' => $authReserveList,
+        ]);
     }
 }

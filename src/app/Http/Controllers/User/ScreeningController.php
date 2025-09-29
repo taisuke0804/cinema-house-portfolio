@@ -36,7 +36,6 @@ class ScreeningController extends Controller
     {
         $screening = $this->screeningService->getScreeningDetails($screening_id);
 
-        // dd($screening);
         return Inertia::render('user/screenings/Show', [
             'screening' => $screening, 
         ]);

@@ -4,6 +4,8 @@ namespace App\Services\User;
 
 use App\Models\Seat;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Collection;
 
 class SeatReservationService
 {
@@ -33,5 +35,40 @@ class SeatReservationService
                 'is_reserved' => true,
             ]);
         });
+    }
+
+    /**
+     * ログインしたユーザーの予約した座席の一覧を取得
+     */
+    public function getReserveList(): Collection
+    {
+        $userId = Auth::guard('web')->id();
+        $today = \Carbon\Carbon::today();
+
+        $authReserveList = Seat::with([
+            'screening:id,start_time,end_time,movie_id',
+            'screening.movie:id,title'
+        ])
+        ->whereHas('screening', function ($query) use ($today) {
+            $query->where('start_time', '>=', $today);
+        })
+        ->select('seats.id', 'seats.screening_id', 'seats.row', 'seats.number', 'seats.is_reserved')
+        ->where('seats.user_id', $userId)
+        ->where('seats.is_reserved', true)
+        ->get();
+
+        // 日付順にSORTする
+        $authReserveList = $authReserveList->sortBy('screening.start_time')->values();
+        return $authReserveList;
+
+        // DBの処理重視なら以下のような書き方もあり。
+        // Seat::with(['screening.movie'])
+        // ->join('screenings', 'seats.screening_id', '=', 'screenings.id')
+        // ->where('seats.user_id', $userId)
+        // ->where('seats.is_reserved', true)
+        // ->where('screenings.start_time', '>=', $today)
+        // ->orderBy('screenings.start_time', 'asc')
+        // ->get(['seats.*']);
+
     }
 }
