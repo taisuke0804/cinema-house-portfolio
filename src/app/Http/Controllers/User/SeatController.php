@@ -6,17 +6,36 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\User\ReserveSeatRequest;
 use Illuminate\Support\Facades\Auth;
+use App\Services\User\SeatReservationService;
+use Inertia\Inertia;
 
 class SeatController extends Controller
 {
+    private $seatReservationService;
+
+    public function __construct(SeatReservationService $seatReservationService)
+    {
+        $this->seatReservationService = $seatReservationService;
+    }
+
     /**
      * 座席を予約する処理
      */
     public function reserve(ReserveSeatRequest $request)
     {
-        $validated = $request->validated();
-        $validated['user_id'] = Auth::id('web');
+        $reservationData = $request->validated();
+        $reservationData['user_id'] = Auth::guard('web')->id();
 
-        dd($validated);
+        $this->seatReservationService->reserveSeat($reservationData);
+
+        return redirect()->route('user.reservation.complete');
+    }
+
+    /**
+     * 座席予約完了画面
+     */
+    public function complete()
+    {
+        return Inertia::render('user/ReservationComplete');
     }
 }

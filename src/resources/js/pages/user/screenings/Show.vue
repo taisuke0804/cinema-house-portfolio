@@ -112,6 +112,15 @@ const reserveSeat = () => {
 
       <div class="border-t-1 border-gray-300"></div>
 
+      <!-- バックエンド側のバリデーションエラーメッセージ -->
+      <el-alert v-if="Object.keys(reserveForm.errors).length" title="入力に不備があります。下記をご確認ください。" type="error" show-icon :closable="false" >
+        <ul class="text-sm text-red-700 list-disc list-inside">
+          <li v-for="(message, field) in reserveForm.errors" :key="field">
+            {{ message }}
+          </li>
+        </ul>
+      </el-alert>
+
       <!-- 凡例 -->
       <h3 class="my-2 font-bold">座席予約状況</h3>
       <p class="text-sm text-gray-500 mb-3">
@@ -177,3 +186,8 @@ const reserveSeat = () => {
     </el-card>
   </div>
 </template>
+<style scoped>
+:deep(.el-alert) {
+  margin-top: 8px;
+}
+</style>
