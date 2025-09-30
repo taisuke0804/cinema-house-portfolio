@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import UserLayout from '@/layouts/UserLayout.vue'
-import { Head } from '@inertiajs/vue3'
+import { Head, Link } from '@inertiajs/vue3'
 
 defineOptions({
   layout: UserLayout
@@ -61,9 +61,13 @@ defineProps<{
                 {{ reservation.row }}{{ reservation.number }}
               </td>
               <td class="px-4 py-2 border space-x-4">
-                <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                <a
+                  :href="route('user.reservations.pdf', reservation.id)"
+                  target="_blank"
+                  class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                >
                   PDF出力
-                </button>
+                </a>
                 <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
                   キャンセル
                 </button>

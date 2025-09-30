@@ -81,4 +81,22 @@ class SeatReservationService
         // ->get(['seats.*']);
 
     }
+
+    /**
+     * ログインしたユーザーの予約した座席情報を取得（個別）
+     * PDF出力用
+     */
+    public function getReservationData(int $seat_id): ?Seat
+    {
+        $reservationData = Seat::with([
+            'screening:id,start_time,end_time,movie_id',
+            'screening.movie:id,title'
+        ])
+        ->select('seats.id', 'seats.screening_id', 'seats.row', 'seats.number')
+        ->where('seats.id', $seat_id)
+        ->where('seats.is_reserved', true)
+        ->first();
+        
+        return $reservationData;
+    }
 }
