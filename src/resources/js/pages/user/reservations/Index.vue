@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import UserLayout from '@/layouts/UserLayout.vue'
-import { Head, Link } from '@inertiajs/vue3'
+import { Head, router } from '@inertiajs/vue3'
+import { ElMessage, ElMessageBox } from 'element-plus'
+
 
 defineOptions({
   layout: UserLayout
@@ -22,12 +24,41 @@ defineProps<{
   }[]
 }>()
 
+/**
+ * キャンセル確認 → 実行
+ */
+const confirmCancel = (seat_id: number) => {
+  ElMessageBox.confirm(
+    'この予約をキャンセルしますか？',
+    '確認',
+    {
+      confirmButtonText: 'キャンセルする',
+      cancelButtonText: '戻る',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+      router.delete(route('user.reservations.cancel', seat_id))
+    })
+    .catch(() => {
+      // キャンセル時は何もしない
+    })
+}
+
 </script>
 <template>
   <Head title="座席予約一覧" />
   
   <div class="p-12">
     <h1 class="text-2xl font-bold mb-6">座席予約一覧</h1>
+
+    <el-alert
+      v-if="$page.props.flash.success"
+      :title="$page.props.flash.success"
+      type="success"
+      show-icon
+      closable
+    />
 
     <div class="mb-6">
       <div class="bg-blue-100 text-blue-800 px-4 py-3 rounded mb-6">
@@ -68,7 +99,10 @@ defineProps<{
                 >
                   PDF出力
                 </a>
-                <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                <button 
+                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 cursor-pointer"
+                  @click="confirmCancel(reservation.id)"
+                >
                   キャンセル
                 </button>
               </td>
@@ -85,3 +119,8 @@ defineProps<{
 
   </div>
 </template>
+<style scoped>
+:deep(.el-alert) {
+  margin-bottom: 12px;
+}
+</style>

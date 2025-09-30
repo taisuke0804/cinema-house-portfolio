@@ -67,4 +67,15 @@ class SeatController extends Controller
         
     	return $pdf->stream();
     }
+
+    /**
+     * 座席予約をキャンセルする処理
+     */
+    public function cancel(int $seat_id)
+    {
+        $this->seatReservationService->cancelSeat($seat_id);
+        
+        return redirect()->route('user.reservations.index')
+            ->with('success', '予約をキャンセルしました');
+    }
 }
