@@ -28,7 +28,11 @@ const props = defineProps<{
       is_reserved: boolean
       user_id?: number | null
     }[]>
-  }
+  },
+  authReservedSeat: {
+    row: string
+    number: number
+  } | null
 }>()
 
 const reserveForm = useForm({
@@ -46,8 +50,8 @@ const selectedSeatId = ref<number | null>(null)
 watch(selectedSeatId, (v) => { reserveForm.seat_id = v }, { immediate: true })
 
 const toggleSeat = (seat: { id: number; is_reserved: boolean; user_id?: number | null; row: string; number: number }) => {
-  // 他人が予約済みの席は選択できない
-  if (seat.is_reserved ) return
+  // 1人1席のみの仕様: 既に予約済みなら選択不可
+  if (props.authReservedSeat || seat.is_reserved ) return
 
   selectedSeatId.value = (selectedSeatId.value === seat.id) ? null : seat.id
 
@@ -112,6 +116,10 @@ const reserveSeat = () => {
 
       <div class="border-t-1 border-gray-300"></div>
 
+      <div v-if="props.authReservedSeat" class="bg-yellow-200 p-4 my-2.5 rounded-lg">
+        <p>あなたの予約済み座席: {{ props.authReservedSeat.row }}{{ props.authReservedSeat.number }}</p>
+      </div>
+
       <!-- バックエンド側のバリデーションエラーメッセージ -->
       <el-alert v-if="Object.keys(reserveForm.errors).length" title="入力に不備があります。下記をご確認ください。" type="error" show-icon :closable="false" >
         <ul class="text-sm text-red-700 list-disc list-inside">
@@ -140,8 +148,10 @@ const reserveSeat = () => {
               'bg-blue-600': selectedSeatId === seat.id,
               'bg-green-600': !seat.is_reserved && selectedSeatId !== seat.id, 
               'bg-gray-400': seat.is_reserved && seat.user_id !== page.props.auth.user?.id,
-              'bg-yellow-400': seat.is_reserved && seat.user_id === page.props.auth.user?.id,
-              'cursor-pointer': !seat.is_reserved
+              'bg-yellow-400': props.authReservedSeat 
+                 && seat.row === props.authReservedSeat.row 
+                 && seat.number === props.authReservedSeat.number,
+              'cursor-pointer': !seat.is_reserved && !props.authReservedSeat
             }"
             @click="toggleSeat(seat)"
           >
@@ -150,38 +160,40 @@ const reserveSeat = () => {
         </div>
       </div>
 
-      <div class="border-t-1 border-gray-300"></div>
-
-      <h3 class=" font-bold leading-none my-3">選択した座席情報</h3>
-
-      <p class="mb-4" v-if="selectedSeatId != null">
-        選択した座席: {{ seatLabel }}
-      </p>
-      <p class="mb-4" v-else>座席が選択されていません。</p>
-
-      <el-button
-        type="primary"
-        :disabled="selectedSeatId == null || reserveForm.processing"
-        :loading="reserveForm.processing"
-        @click="handleOpenConfirm" 
-      >
-        予約する
-      </el-button>
-
-      <!-- モーダル -->
-      <el-dialog
-        v-model="confirmDialogVisible"
-        title="座席予約確認"
-        width="400px"
-        :show-close="false"
-      >
-        <p>入力内容を送信してよろしいですか？</p>
-
-        <template #footer>
-          <el-button @click="confirmDialogVisible = false">キャンセル</el-button>
-          <el-button type="primary" @click="reserveSeat" >送信</el-button>
-        </template>
-      </el-dialog>
+      <template v-if="!props.authReservedSeat">
+        <div class="border-t-1 border-gray-300"></div>
+  
+        <h3 class=" font-bold leading-none my-3">選択した座席情報</h3>
+  
+        <p class="mb-4" v-if="selectedSeatId != null">
+          選択した座席: {{ seatLabel }}
+        </p>
+        <p class="mb-4" v-else>座席が選択されていません。</p>
+  
+        <el-button
+          type="primary"
+          :disabled="selectedSeatId == null || reserveForm.processing"
+          :loading="reserveForm.processing"
+          @click="handleOpenConfirm" 
+        >
+          予約する
+        </el-button>
+  
+        <!-- モーダル -->
+        <el-dialog
+          v-model="confirmDialogVisible"
+          title="座席予約確認"
+          width="400px"
+          :show-close="false"
+        >
+          <p>入力内容を送信してよろしいですか？</p>
+  
+          <template #footer>
+            <el-button @click="confirmDialogVisible = false">キャンセル</el-button>
+            <el-button type="primary" @click="reserveSeat" >送信</el-button>
+          </template>
+        </el-dialog>
+      </template>
 
     </el-card>
   </div>

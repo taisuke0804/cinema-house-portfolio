@@ -5,6 +5,7 @@ use App\Models\Screening;
 use Illuminate\Support\Facades\DB;
 use App\Models\Seat;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class ScreeningService
 {
@@ -82,5 +83,27 @@ class ScreeningService
             'seats' => $groupedSeats,
         ];
 
+    }
+
+    /**
+     * ログインユーザーの予約済み座席情報を取得
+     * 詳細画面全体で使用するためのメソッド
+     */
+    public function getAuthReservedSeatInfo(int $screening_id): ?array
+    {
+        $authReservedSeat = Seat::where('screening_id', $screening_id)
+            ->where('user_id', Auth::guard('web')->id())
+            ->where('is_reserved', true)
+            ->first();
+
+        if (!$authReservedSeat) {
+            return null;
+        }
+
+        // Vue 側で必要な項目だけ返す
+        return [
+            'row' => $authReservedSeat->row,
+            'number' => $authReservedSeat->number,
+        ];
     }
 }
