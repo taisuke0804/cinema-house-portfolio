@@ -28,8 +28,9 @@ Route::prefix('user')->name('user.')->middleware(['web'])->group(function () {
 
         Route::controller(SeatController::class)->group(function () {
             Route::post('seats/reserve', 'reserve')->name('seats.reserve');
-            Route::get('/seats/reserve/complete', 'complete')->name('reservation.complete');
+            Route::get('seats/reserve/complete', 'complete')->name('reservation.complete');
             Route::get('reservations', 'index')->name('reservations.index');
+            Route::get('reservations/{seat_id}/pdf', 'exportPdf')->name('reservations.pdf');
         });
     });
 });

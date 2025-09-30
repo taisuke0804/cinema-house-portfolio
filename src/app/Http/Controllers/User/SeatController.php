@@ -8,6 +8,7 @@ use App\Http\Requests\User\ReserveSeatRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Services\User\SeatReservationService;
 use Inertia\Inertia;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SeatController extends Controller
 {
@@ -49,5 +50,15 @@ class SeatController extends Controller
         return Inertia::render('user/reservations/Index', [
             'reservations' => $reservations,
         ]);
+    }
+
+    /**
+     * 予約した座席情報のPDFを出力
+     */
+    public function exportPdf(int $seat_id)
+    {
+        $pdf = Pdf::loadView('pdf.reservation');
+
+    	return $pdf->stream();
     }
 }
