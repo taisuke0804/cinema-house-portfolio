@@ -99,4 +99,20 @@ class SeatReservationService
         
         return $reservationData;
     }
+
+    /**
+     * 座席予約をキャンセルする処理
+     */
+    public function cancelSeat(int $seat_id): void
+    {
+        $seat = Seat::where('id', $seat_id)
+            ->where('user_id', Auth::id())
+            ->where('is_reserved', true)
+            ->firstOrFail();
+
+        $seat->update([
+            'is_reserved' => false,
+            'user_id' => null,
+        ]);
+    }
 }
