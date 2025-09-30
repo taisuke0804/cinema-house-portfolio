@@ -38,4 +38,16 @@ class SeatController extends Controller
     {
         return Inertia::render('user/ReservationComplete');
     }
+
+    /**
+     * 予約した座席の一覧を表示
+     */
+    public function index()
+    {
+        $reservations = $this->seatReservationService->getReserveList();
+
+        return Inertia::render('user/reservations/Index', [
+            'reservations' => $reservations,
+        ]);
+    }
 }
