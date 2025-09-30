@@ -5,6 +5,7 @@ use App\Models\Screening;
 use Illuminate\Support\Facades\DB;
 use App\Models\Seat;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class ScreeningService
 {
@@ -63,14 +64,15 @@ class ScreeningService
             // valuesメソッドはキーをリセット後、連続した整数にした新しいコレクションを返します。
             ->map(fn($rowSeats) => $rowSeats->sortBy('number')->values());
         
-            // 日付・時間フォーマット
+        // 日付・時間フォーマット
         $screening_date = Carbon::parse($screening->start_time)->format('Y年m月d日');
         $start_time = Carbon::parse($screening->start_time)->format('H:i');
         $end_time = Carbon::parse($screening->end_time)->format('H:i');
-
+        // dd($screening->start_time);
         // Vueに渡すデータを加工して返却
         return [
             'screening_id' => $screening->id,
+            'date' => $screening->start_time,
             'screening_date' => $screening_date,
             'start_time' => $start_time,
             'end_time' => $end_time,
@@ -82,5 +84,27 @@ class ScreeningService
             'seats' => $groupedSeats,
         ];
 
+    }
+
+    /**
+     * ログインユーザーの予約済み座席情報を取得
+     * 詳細画面全体で使用するためのメソッド
+     */
+    public function getAuthReservedSeatInfo(int $screening_id): ?array
+    {
+        $authReservedSeat = Seat::where('screening_id', $screening_id)
+            ->where('user_id', Auth::guard('web')->id())
+            ->where('is_reserved', true)
+            ->first();
+
+        if (!$authReservedSeat) {
+            return null;
+        }
+
+        // Vue 側で必要な項目だけ返す
+        return [
+            'row' => $authReservedSeat->row,
+            'number' => $authReservedSeat->number,
+        ];
     }
 }
