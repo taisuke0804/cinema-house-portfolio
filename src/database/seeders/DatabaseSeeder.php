@@ -15,9 +15,23 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
+
+        if (app()->environment('local')) {
+            // 開発用ダミーデータ
+            $this->call([
+                DevelopmentSeeder::class,
+            ]);
+        }
+
+        if (app()->environment(['production', 'staging'])) {
+            // デプロイ用最低限のデータ
+            $this->call([
+                DeploySeeder::class,
+            ]);
+        }
     }
 }
