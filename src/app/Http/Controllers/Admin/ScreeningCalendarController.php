@@ -26,12 +26,10 @@ class ScreeningCalendarController extends Controller
      */
     public function index()
     {
-        $this->screeningService->getGroupedScreenings();
-
-        $screenings = Screening::with('movie')->get();
+        $screeningsByDate = $this->screeningService->getGroupedScreenings();
 
         return inertia::render('admin/screenings/Calendar', [
-            'screenings' => $screenings,
+            'screeningsByDate' => $screeningsByDate,
         ]);
     }
 
