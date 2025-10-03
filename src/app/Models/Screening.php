@@ -26,6 +26,12 @@ class Screening extends Model
         ];
     }
 
+    // 上映開始時間から日付だけを取得
+    public function getScreeningDateAttribute()
+    {
+        return $this->start_time->toDateString(); // "2025-10-03"
+    }
+
     public function movie()
     {
         return $this->belongsTo(Movie::class);
