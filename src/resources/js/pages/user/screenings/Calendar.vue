@@ -11,24 +11,16 @@ defineOptions({
 const selectedDate = ref(new Date()) // 現在の日付と時刻を取得
 
 const props = defineProps<{
-  screenings: {
-    id: number
-    start_time: string
-    end_time: string
-    movie: { id: number; title: string }
-  }[]
+  screeningsByDate: Record<
+    string,
+    {
+      id: number
+      start_time: string
+      end_time: string
+      movie: { id: number; title: string }
+    }[]
+  >
 }>()
-
-// 日付文字列ごとに上映スケジュールをまとめる
-const screeningsByDate = computed(() => {
-  const map: { [key: string]: typeof props.screenings } = {}
-  props.screenings.forEach(sc => {
-    const dateKey = dayjs(sc.start_time).format('YYYY-MM-DD')
-    if (!map[dateKey]) map[dateKey] = []
-    map[dateKey].push(sc)
-  })
-  return map
-})
 
 </script>
 <template>
@@ -56,7 +48,7 @@ const screeningsByDate = computed(() => {
         <!-- 上映スケジュール -->
         <ul class="mt-1 space-y-1">
           <li
-            v-for="s in screeningsByDate[data.day] || []"
+            v-for="s in props.screeningsByDate[data.day] || []"
             :key="s.id"
             class="truncate"
           >
