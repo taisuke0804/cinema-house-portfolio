@@ -1,25 +1,15 @@
 <script setup lang="ts">
 import AdminLayout from '@/layouts/AdminLayout.vue'
-import { Head, Link } from '@inertiajs/vue3'
-import { ref, computed } from 'vue'
-import dayjs from 'dayjs' // JavaScriptの日付処理・操作のライブラリ
+import { Head } from '@inertiajs/vue3'
+import ScreeningCalendar from '@/components/ScreeningCalendar.vue'
+import type { Screening } from '@/types/screening'
 
 defineOptions({
   layout: AdminLayout
 })
 
-const selectedDate = ref(new Date()) // 現在の日付と時刻を取得
-
-const props = defineProps<{
-  screeningsByDate: Record<
-    string,
-    {
-      id: number
-      start_time: string
-      end_time: string
-      movie: { id: number; title: string }
-    }[]
-  >
+defineProps<{
+  screeningsByDate: Record<string, Screening[]>
 }>()
 
 </script>
@@ -38,47 +28,8 @@ const props = defineProps<{
       closable
     />
 
-    <el-calendar v-model="selectedDate">
-      <template #date-cell="{ data }" >
-        <!-- 日付 -->
-        <div class="text-sm font-medium">
-          {{ dayjs(data.day).format('D日') }}
-        </div>
-
-        <!-- 上映スケジュール -->
-        <ul class="mt-1 space-y-1">
-          <li
-            v-for="s in props.screeningsByDate[data.day] || []"
-            :key="s.id"
-            class="truncate"
-          >
-            <el-tooltip
-              effect="dark"
-              placement="top"
-            >
-
-              <template #content>
-                タイトル： 『{{ s.movie.title }}』<br />
-                上映時間： {{ dayjs(s.start_time).format('HH:mm') }} ～ {{ dayjs(s.end_time).format('HH:mm') }}
-              </template>
-
-              <Link :href="route('admin.screenings.show', s.id)">
-                <span class="cursor-pointer text-xs text-blue-600 underline">
-                  {{ s.movie.title }}
-                </span>
-              </Link>
-
-            </el-tooltip>
-          </li>
-        </ul>
-
-      </template>
-    </el-calendar>
+    <!-- カレンダーコンポーネント -->
+    <ScreeningCalendar :screeningsByDate="screeningsByDate" routeName="admin.screenings.show" />
+    
   </div>
 </template>
-<style scoped>
-/* カレンダーセルの日付枠サイズを拡張 */
-:deep(.el-calendar-table .el-calendar-day) {
-  height: 150px; /* デフォルトは60px前後 */
-}
-</style>
