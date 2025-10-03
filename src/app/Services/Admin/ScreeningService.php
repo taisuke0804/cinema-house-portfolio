@@ -6,9 +6,22 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Seat;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Collection;
 
 class ScreeningService
 {
+    /**
+     * 上映スケジュールを日付ごとにまとめる
+     */
+    public function getGroupedScreenings(): Collection
+    {
+        return Screening::with('movie')
+            ->orderBy('start_time')
+            ->get()
+            ->groupBy(fn($s) => $s->start_time->toDateString()); // 日付ごとにグループ化
+
+    }
+
     /**
      * 上映スケジュールの新規登録
      */
