@@ -44,6 +44,7 @@ html, body {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 20px;
+    color: #e7000b;
 }
 
 /* 映画情報 */
