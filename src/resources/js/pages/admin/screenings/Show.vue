@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3'
 import AdminLayout from '@/layouts/AdminLayout.vue'
+import { computed } from 'vue'
 
 defineOptions({
   layout: AdminLayout
@@ -10,6 +11,7 @@ defineOptions({
 const props = defineProps<{
   screening: {
     screening_id: number
+    date: string
     screening_date: string
     start_time: string
     end_time: string
@@ -27,6 +29,14 @@ const props = defineProps<{
     }[]>
   }
 }>()
+
+// 上映日が過去かどうか
+const isPastScreening = computed(() => {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0) // 時間は無視して日付だけ比較
+  const screeningDate = new Date(props.screening.date)
+  return screeningDate < today
+})
 
 </script>
 <template>
@@ -64,30 +74,39 @@ const props = defineProps<{
 
       <div class="border-t-1 border-gray-300"></div>
 
-      <!-- 凡例 -->
-      <h3 class="my-2 font-bold">座席予約状況</h3>
-      <p class="text-sm text-gray-500 mb-3">
-        緑色: 空席 / 灰色: 予約済み
-      </p>
+      <template v-if="isPastScreening" >
+        <div class="bg-red-300 p-4 my-2.5 rounded-lg">
+          <p>この上映スケジュールの予約は終了しました。</p>
+        </div>
+      </template>
+      <template v-else>
 
-      <!-- 座席表 -->
-      <div v-for="(rowSeats, row) in props.screening.seats" :key="row" class="flex items-center mb-3">
-        <span class="w-6 font-bold">{{ row }}</span>
-
-        <div class="grid grid-cols-10 gap-3">
-          <div
-            v-for="seat in rowSeats"
-            :key="seat.id"
-            class="w-10 h-10 flex items-center justify-center rounded text-white text-sm"
-            :class="{
-              'bg-green-600': !seat.is_reserved,
-              'bg-gray-400': seat.is_reserved
-            }"
-          >
-            {{ seat.number }}
+        <!-- 凡例 -->
+        <h3 class="my-2 font-bold">座席予約状況</h3>
+        <p class="text-sm text-gray-500 mb-3">
+          緑色: 空席 / 灰色: 予約済み
+        </p>
+  
+        <!-- 座席表 -->
+        <div v-for="(rowSeats, row) in props.screening.seats" :key="row" class="flex items-center mb-3">
+          <span class="w-6 font-bold">{{ row }}</span>
+  
+          <div class="grid grid-cols-10 gap-3">
+            <div
+              v-for="seat in rowSeats"
+              :key="seat.id"
+              class="w-10 h-10 flex items-center justify-center rounded text-white text-sm"
+              :class="{
+                'bg-green-600': !seat.is_reserved,
+                'bg-gray-400': seat.is_reserved
+              }"
+            >
+              {{ seat.number }}
+            </div>
           </div>
         </div>
-      </div>
+
+      </template>
 
     </el-card>
   </div>

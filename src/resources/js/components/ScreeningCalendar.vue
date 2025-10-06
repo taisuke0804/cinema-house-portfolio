@@ -55,4 +55,12 @@ const selectedDate = ref(new Date())
 :deep(.el-calendar-table .el-calendar-day) {
   height: 150px;
 }
+
+:deep(.el-calendar-table thead tr th:first-child) {
+  color: red;
+}
+
+:deep(.el-calendar-table thead tr th:last-child) {
+  color: blue;
+}
 </style>
