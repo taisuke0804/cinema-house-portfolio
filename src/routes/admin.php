@@ -23,7 +23,9 @@ Route::middleware(['web', 'admin'])->group(function () {
 
     Route::middleware(['auth:admin'])->group(function () {
         Route::post('logout', [AdminLoginController::class, 'logout'])->name('logout');
+        
         Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::post('notifications/send', [AdminDashboardController::class, 'sendNotification'])->name('notifications.send');
 
         Route::controller(MovieController::class)->group(function () {
             Route::get('movies', 'index')->name('movies.index');
