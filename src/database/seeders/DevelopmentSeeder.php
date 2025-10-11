@@ -24,7 +24,7 @@ class DevelopmentSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'テスト',
-            'email' => 'test@gmail.com',
+            'email' => env('TEST_USER_EMAIL', 'test@gmail.com'),
             'password' => Hash::make('1111aaaa'),
             'remember_token' => Str::random(10),
         ]);

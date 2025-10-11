@@ -8,7 +8,8 @@
 
   <hr>
   <p style="font-size: 12px; color: #666;">
-    このメールは CINEMA-HOUSE 管理者より送信されています。
+    このメールは CINEMA-HOUSE 管理者より送信されています。<br />
+    portfolio用のテストメールになります。身に覚えがない場合は削除してください。
   </p>
 </body>
 </html>

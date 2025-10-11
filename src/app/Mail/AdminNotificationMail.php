@@ -30,7 +30,7 @@ class AdminNotificationMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Admin Notification Mail',
+            subject: 'CINEMA-HOUSEからお知らせ  ' . $this->subjectLine,
             from: new Address(
                 env('MAIL_FROM_ADDRESS', 'hello@example.com'), 
                 env('MAIL_FROM_NAME', 'Example'),

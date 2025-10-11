@@ -46,6 +46,8 @@ const submitNotification = () => {
   NotificationForm.post(route('admin.notifications.send'), {
     onSuccess: () => {
       confirmDialogVisible.value = false
+      NotificationForm.reset()
+      sendNotificationFormRef.value?.clearValidate()
     },
     onError: () => {
       confirmDialogVisible.value = false // バックエンド側のバリデーションエラー発生時にモーダルを閉じる
