@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminLoginController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\MovieController;
 use App\Http\Controllers\Admin\ScreeningCalendarController;
+use App\Http\Controllers\Admin\AdminUserController;
 
 // ------------------------------------------------------------------------------------------------
 /**
@@ -39,6 +40,10 @@ Route::middleware(['web', 'admin'])->group(function () {
             Route::get('movies/{movie_id}/screenings/create', 'create')->name('screenings.create');
             Route::post('movies/{movie_id}/screenings', 'store')->name('screenings.store');
             Route::get('screenings/{screening_id}', 'show')->name('screenings.show');
+        });
+
+        Route::controller(AdminUserController::class)->group(function () {
+            Route::get('users', 'index')->name('users.index');
         });
     });
 
