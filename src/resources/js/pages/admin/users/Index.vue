@@ -39,7 +39,7 @@ const handlePageChange = (page: number) => {
   <div class="p-6">
     <div class="flex justify-between">
       <h1 class="text-2xl font-bold mb-6">ユーザー  一覧</h1>
-      <Link href="#">
+      <Link :href="route('admin.users.create')">
         <el-button type="success">ユーザー新規登録</el-button>
       </Link>
     </div>

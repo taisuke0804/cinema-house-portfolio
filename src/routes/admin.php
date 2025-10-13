@@ -44,6 +44,7 @@ Route::middleware(['web', 'admin'])->group(function () {
 
         Route::controller(AdminUserController::class)->group(function () {
             Route::get('users', 'index')->name('users.index');
+            Route::get('users/create', 'create')->name('users.create');
         });
     });
 
