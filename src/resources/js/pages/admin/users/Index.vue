@@ -44,6 +44,14 @@ const handlePageChange = (page: number) => {
       </Link>
     </div>
 
+    <el-alert
+      v-if="$page.props.flash.success"
+      :title="$page.props.flash.success"
+      type="success"
+      show-icon
+      closable
+    />
+
     <el-table :data="props.users.data" stripe border style="width: 100%">
       <el-table-column prop="id" label="ID" width="80" align="center" />
       <el-table-column prop="name" label="名前" />
@@ -80,3 +88,8 @@ const handlePageChange = (page: number) => {
   </div>
 
 </template>
+<style scoped>
+:deep(.el-alert) {
+  margin-bottom: 8px;
+}
+</style>

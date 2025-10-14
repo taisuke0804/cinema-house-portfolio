@@ -88,6 +88,14 @@ const submitUserStore = () => {
   <div class="max-w-2xl mx-auto p-6 bg-gray-50 rounded-lg shadow-sm">
     <h1 class="text-2xl font-bold mb-8">ユーザー新規登録</h1>
 
+    <el-alert v-if="Object.keys(userForm.errors).length" title="入力に不備があります。下記をご確認ください。" type="error" show-icon :closable="false" >
+      <ul class="text-sm text-red-700 list-disc list-inside">
+        <li v-for="(message, field) in userForm.errors" :key="field">
+          {{ message }}
+        </li>
+      </ul>
+    </el-alert>
+
     <el-form 
       label-position="top" 
       @submit.prevent="handleOpenConfirm"
@@ -157,3 +165,8 @@ const submitUserStore = () => {
     </el-form>
   </div>
 </template>
+<style scoped>
+:deep(.el-alert) {
+  margin-bottom: 8px;
+}
+</style>

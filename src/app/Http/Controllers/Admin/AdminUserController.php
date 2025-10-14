@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Http\Requests\Admin\StoreUserRequest;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\RedirectResponse;
 
 class AdminUserController extends Controller
 {
@@ -30,5 +33,18 @@ class AdminUserController extends Controller
     public function create(): Response
     {
         return Inertia::render('admin/users/Create');
+    }
+
+    public function store(StoreUserRequest $request): RedirectResponse
+    {
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', 'ユーザーを登録しました。');
     }
 }
