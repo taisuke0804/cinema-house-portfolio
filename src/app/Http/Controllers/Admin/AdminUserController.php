@@ -47,4 +47,11 @@ class AdminUserController extends Controller
             ->route('admin.users.index')
             ->with('success', 'ユーザーを登録しました。');
     }
+
+    public function show(int $id)
+    {
+        $user = User::select('id', 'name', 'email', 'created_at')->findOrFail($id);
+
+        dd($user);
+    }
 }
