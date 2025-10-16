@@ -39,10 +39,18 @@ const handlePageChange = (page: number) => {
   <div class="p-6">
     <div class="flex justify-between">
       <h1 class="text-2xl font-bold mb-6">ユーザー  一覧</h1>
-      <Link href="#">
+      <Link :href="route('admin.users.create')">
         <el-button type="success">ユーザー新規登録</el-button>
       </Link>
     </div>
+
+    <el-alert
+      v-if="$page.props.flash.success"
+      :title="$page.props.flash.success"
+      type="success"
+      show-icon
+      closable
+    />
 
     <el-table :data="props.users.data" stripe border style="width: 100%">
       <el-table-column prop="id" label="ID" width="80" align="center" />
@@ -80,3 +88,8 @@ const handlePageChange = (page: number) => {
   </div>
 
 </template>
+<style scoped>
+:deep(.el-alert) {
+  margin-bottom: 8px;
+}
+</style>
