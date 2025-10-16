@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AdminLayout from '@/layouts/AdminLayout.vue'
-import { Head, Link } from '@inertiajs/vue3'
+import { Head, Link, router } from '@inertiajs/vue3'
+import { ElMessageBox, ElMessage } from 'element-plus'
 import dayjs from 'dayjs'
 import 'dayjs/locale/ja'
 dayjs.locale('ja')
@@ -17,6 +18,28 @@ defineProps<{
     created_at: string
   }
 }>()
+
+const confirmDelete = (id: number) => {
+  ElMessageBox.confirm(
+    'このユーザーを削除しますか？',
+    '確認',
+    {
+      confirmButtonText: '削除する',
+      cancelButtonText: 'キャンセル',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+      router.delete(route('admin.users.destroy', id), {
+        onSuccess: () => {
+          ElMessage.success('ユーザーを削除しました')
+        },
+      })
+    })
+    .catch(() => {
+      ElMessage.info('削除をキャンセルしました')
+    })
+}
 
 </script>
 <template>
@@ -39,7 +62,7 @@ defineProps<{
           </p>
         </div>
 
-        <el-button type="danger" plain>
+        <el-button type="danger" plain @click="confirmDelete(user.id)">
           削除
         </el-button>
 

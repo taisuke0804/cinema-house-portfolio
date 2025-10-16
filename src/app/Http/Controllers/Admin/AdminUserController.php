@@ -56,4 +56,14 @@ class AdminUserController extends Controller
             'user' => $user,
         ]);
     }
+
+    public function destroy(int $id): RedirectResponse
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', 'ユーザーを削除しました。');
+        }
 }
