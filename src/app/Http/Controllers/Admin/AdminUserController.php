@@ -47,4 +47,13 @@ class AdminUserController extends Controller
             ->route('admin.users.index')
             ->with('success', 'ユーザーを登録しました。');
     }
+
+    public function show(int $id): Response
+    {
+        $user = User::select('id', 'name', 'email', 'created_at')->findOrFail($id);
+
+        return Inertia::render('admin/users/Show', [
+            'user' => $user,
+        ]);
+    }
 }

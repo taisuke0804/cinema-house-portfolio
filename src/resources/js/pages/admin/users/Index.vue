@@ -64,7 +64,7 @@ const handlePageChange = (page: number) => {
       <el-table-column label="操作" width="120" align="center">
         <template #default="{ row }">
           <Link
-            href="#"
+            :href="route('admin.users.show', row.id)"
             class="el-button el-button--primary el-button--small"
           >
             詳細
