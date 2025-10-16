@@ -48,10 +48,12 @@ class AdminUserController extends Controller
             ->with('success', 'ユーザーを登録しました。');
     }
 
-    public function show(int $id)
+    public function show(int $id): Response
     {
         $user = User::select('id', 'name', 'email', 'created_at')->findOrFail($id);
 
-        dd($user);
+        return Inertia::render('admin/users/Show', [
+            'user' => $user,
+        ]);
     }
 }
