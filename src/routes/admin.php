@@ -47,6 +47,7 @@ Route::middleware(['web', 'admin'])->group(function () {
             Route::get('users/create', 'create')->name('users.create');
             Route::post('users', 'store')->name('users.store');
             Route::get('users/{id}', 'show')->name('users.show');
+            Route::delete('users/{id}', 'destroy')->name('users.destroy');
         });
     });
 
