@@ -40,7 +40,7 @@ enum Genre: int
     public static function options(): array
     {
         return array_map(fn(self $genre) => [
-            'value' => $genre->value,
+            'value' => (string)$genre->value,
             'label' => $genre->getLabel(),
         ], self::cases());
     }
