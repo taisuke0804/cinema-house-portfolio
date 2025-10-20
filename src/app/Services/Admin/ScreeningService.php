@@ -90,6 +90,7 @@ class ScreeningService
             'start_time' => $start_time,
             'end_time' => $end_time,
             'movie' => [
+                'id' => $screening->movie->id,
                 'title' => $screening->movie->title,
                 'genre' => $screening->movie->genre,
                 'genre_label' => $screening->movie->genre->getLabel(),

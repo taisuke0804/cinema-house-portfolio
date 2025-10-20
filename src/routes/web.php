@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\User\ScreeningController;
 use App\Http\Controllers\User\SeatController;
+use App\Http\Controllers\User\MovieController;
 
 Route::get('/', function () {
     return Inertia::render('Index');
@@ -32,6 +33,12 @@ Route::prefix('user')->name('user.')->middleware(['web'])->group(function () {
             Route::get('reservations', 'index')->name('reservations.index');
             Route::get('reservations/{seat_id}/pdf', 'exportPdf')->name('reservations.pdf');
             Route::delete('reservations/{seat_id}', 'cancel')->name('reservations.cancel');
+        });
+
+        Route::controller(MovieController::class)->group(function () {
+            Route::get('movies', 'index')->name('movies.index');
+            Route::get('movies/{id}', 'show')->name('movies.show');
+            Route::post('/movies/{id}/like', 'toggle')->name('movies.like');
         });
     });
 });
