@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3'
 import AdminLayout from '@/layouts/AdminLayout.vue'
+import { StarFilled } from '@element-plus/icons-vue'
 
 defineOptions({
   layout: AdminLayout
@@ -12,6 +13,7 @@ const props = defineProps<{
     title: string
     genre_label: string
     description: string
+    like_count: number
   }
 }>()
 
@@ -44,6 +46,20 @@ const props = defineProps<{
         <p class="whitespace-pre-line text-lg">
           {{ props.movie.description }}
         </p>
+
+        <!-- いいね！ボタン -->
+        <div class="mt-8 flex items-center space-x-3">
+          <el-icon
+            size="28"
+            class=" transition-colors duration-300"
+          >
+            <StarFilled />
+          </el-icon>
+          <span class="text-gray-600 text-lg">
+            {{ props.movie.like_count }} 件のいいね
+          </span>
+        </div>
+
       </div>
     </el-card>
 
