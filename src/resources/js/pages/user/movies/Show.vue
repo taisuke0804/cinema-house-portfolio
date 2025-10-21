@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3'
-import AdminLayout from '@/layouts/AdminLayout.vue'
-import { StarFilled } from '@element-plus/icons-vue'
+import UserLayout from '@/layouts/UserLayout.vue'
+import { Head, router  } from '@inertiajs/vue3'
+import { ref } from 'vue'
+import { Star, StarFilled } from '@element-plus/icons-vue'
 
 defineOptions({
-  layout: AdminLayout
+  layout: UserLayout
 })
 
 const props = defineProps<{
@@ -13,9 +14,29 @@ const props = defineProps<{
     title: string
     genre_label: string
     description: string
+    liked: boolean
     like_count: number
   }
 }>()
+
+// 初期値を Laravel側のpropsから反映
+const liked = ref(props.movie.liked)
+const likeCount = ref(props.movie.like_count)
+
+// いいねトグル処理（バックエンド通信）
+const toggleLike = () => {
+  router.post(
+    route('user.movies.like', props.movie.id),
+    {},
+    {
+      preserveScroll: true,
+      onSuccess: () => {
+        liked.value = !liked.value
+        likeCount.value += liked.value ? 1 : -1
+      },
+    }
+  )
+}
 
 </script>
 <template>
@@ -51,32 +72,21 @@ const props = defineProps<{
         <div class="mt-8 flex items-center space-x-3">
           <el-icon
             size="28"
-            class=" transition-colors duration-300"
+            class="cursor-pointer transition-colors duration-300"
+            @click="toggleLike"
           >
-            <StarFilled />
+            <component :is="liked ? StarFilled : Star" />
           </el-icon>
+
           <span class="text-gray-600 text-lg">
-            {{ props.movie.like_count }} 件のいいね
+            {{ likeCount }} 件のいいね
           </span>
         </div>
+
+
 
       </div>
     </el-card>
 
-    <div class="flex justify-between items-center">
-      <Link :href="route('admin.movies.index')">
-        <el-button type="info">映画一覧に戻る</el-button>
-      </Link>
-
-      <div class="flex gap-4">
-        <!-- 削除ボタン 後ほど実装 -->
-        <!-- <el-button type="danger">削除</el-button> -->
-
-        <!-- 上映スケジュール登録ボタン -->
-        <Link :href="route('admin.screenings.create', props.movie.id)">
-          <el-button type="primary">上映スケジュールを登録</el-button>
-        </Link>
-      </div>
-    </div>
   </div>
 </template>

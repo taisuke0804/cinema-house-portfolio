@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, usePage, useForm } from '@inertiajs/vue3'
+import { Head, usePage, useForm, Link } from '@inertiajs/vue3'
 import UserLayout from '@/layouts/UserLayout.vue'
 import { ref, computed, watch } from 'vue'
 
@@ -18,6 +18,7 @@ const props = defineProps<{
     start_time: string
     end_time: string
     movie: {
+      id: number
       title: string
       genre: string
       genre_label: string
@@ -102,7 +103,9 @@ const reserveSeat = () => {
       <div class="space-y-1 mb-3">
         <p class="text-lg font-semibold">
           <strong class="mr-2">映画タイトル:</strong>
-           『{{ props.screening.movie.title }}』
+            <Link :href="route('user.movies.show', props.screening.movie.id)" class="text-blue-600 hover:underline">
+              『{{ props.screening.movie.title }}』
+            </Link>
         </p>
 
         <p class="text-base text-gray-600">
