@@ -49,6 +49,8 @@ class MovieSeeder extends Seeder
             'genre' => 99,
         ]);
 
-        Movie::factory()->count(50)->create();
+        if (!app()->environment(['production', 'staging'])) {
+            Movie::factory()->count(50)->create();
+        }
     }
 }
