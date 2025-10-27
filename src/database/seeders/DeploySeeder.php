@@ -29,12 +29,13 @@ class DeploySeeder extends Seeder
             'password' => Hash::make(env('TEST_USER_PASSWORD', '1111aaaa')),
         ]);
 
-        User::factory()->count(50)->create();
+        // 環境変数から作成するユーザー数を取得（デフォルトは 10）
+        $userCount = (int) env('DEPLOY_USER_COUNT', 10);
+        User::factory($userCount)->create();
 
         $this->call([
             MovieSeeder::class,
             ScreeningSeeder::class,
-            SeatSeeder::class,
         ]);
 
     }

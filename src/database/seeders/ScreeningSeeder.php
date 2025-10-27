@@ -58,9 +58,11 @@ class ScreeningSeeder extends Seeder
             'end_time' => $daysAgo->copy()->setTime(11, 0, 0),
         ]);
 
-        // 重複する上映スケジュールが生成される可能性があるため、for文を利用して20件生成する
-        for ($i = 0; $i < 20; $i++) {
-            Screening::factory()->create();
+        if (!app()->environment(['production', 'staging'])) {
+            // 重複する上映スケジュールが生成される可能性があるため、for文を利用して20件生成する
+            for ($i = 0; $i < 20; $i++) {
+                Screening::factory()->create();
+            }
         }
     }
 }
