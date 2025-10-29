@@ -36,6 +36,7 @@ class DeploySeeder extends Seeder
         $this->call([
             MovieSeeder::class,
             ScreeningSeeder::class,
+            SeatSeeder::class,
         ]);
 
     }

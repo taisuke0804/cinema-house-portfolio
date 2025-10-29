@@ -38,17 +38,19 @@ class SeatSeeder extends Seeder
             Seat::insert($seats); // 一括挿入で座席を生成
         }
 
-        // Userモデルからランダムにユーザーを5人取得
-        $randomUsers = User::inRandomOrder()->limit(5)->get();
-
-        // 予約済みの座席を生成
-        $seats = Seat::inRandomOrder()->limit(5)->get();
-        foreach ($seats as $seat) {
-            $user = $randomUsers->shift(); // 配列から先頭の要素を取り出す
-            $seat->update([
-                'user_id' => $user->id,
-                'is_reserved' => true,
-            ]);
+        if (!app()->environment(['production', 'staging'])) {
+            // Userモデルからランダムにユーザーを5人取得
+            $randomUsers = User::inRandomOrder()->limit(5)->get();
+    
+            // 予約済みの座席を生成
+            $seats = Seat::inRandomOrder()->limit(5)->get();
+            foreach ($seats as $seat) {
+                $user = $randomUsers->shift(); // 配列から先頭の要素を取り出す
+                $seat->update([
+                    'user_id' => $user->id,
+                    'is_reserved' => true,
+                ]);
+            }
         }
     }
 }
