@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Head } from '@inertiajs/vue3'
 import UserLayout from '@/layouts/UserLayout.vue'
 
 defineOptions({
@@ -6,6 +7,7 @@ defineOptions({
 })
 </script>
 <template>
+  <Head title="ユーザートップページ" />
   <div>
     <h1 class="text-2xl font-bold mb-6 text-center">ユーザートップページ</h1>
 
