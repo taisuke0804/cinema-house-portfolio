@@ -15,6 +15,7 @@ class Movie extends Model
         'title',
         'genre',
         'description',
+        'poster_path',
     ];
 
     protected function casts(): array
