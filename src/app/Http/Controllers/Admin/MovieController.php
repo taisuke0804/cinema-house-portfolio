@@ -50,7 +50,7 @@ class MovieController extends Controller
      */
     public function store(StoreMovieRequest $request)
     {
-        $this->movieService->storeMovie($request->validated());
+        $this->movieService->storeMovie($request->validated(), $request->file('poster'));
 
         return redirect()->route('admin.movies.index')->with('success', '映画の新規登録が完了しました');
     }
