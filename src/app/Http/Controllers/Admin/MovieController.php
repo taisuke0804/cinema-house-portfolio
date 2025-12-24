@@ -69,6 +69,7 @@ class MovieController extends Controller
                 'genre_label' => $movie->genre->getLabel(),
                 'description' => $movie->description,
                 'like_count' => $movie->likedByUsers()->count(),
+                'poster_url' => $movie->poster_url,
             ],
         ]);
     }
