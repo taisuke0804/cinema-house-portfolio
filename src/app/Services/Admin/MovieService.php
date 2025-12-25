@@ -6,6 +6,8 @@ use App\Models\Movie;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class MovieService
 {
@@ -34,8 +36,16 @@ class MovieService
     /**
      * 映画の新規登録
      */
-    public function storeMovie(array $validated): void
+    public function storeMovie(array $validated, UploadedFile | null $poster): void
     {
+        // posterが未指定の場合は poster_path はnullのまま保存する
+        $posterPath = null;
+        
+        if (!is_null($poster)) {
+            $posterPath = $poster->store('movies', 'public');
+            $validated['poster_path'] = $posterPath;
+        }
+
         Movie::create($validated);
     }
 
@@ -44,8 +54,13 @@ class MovieService
      */
     public function getMovieById(int $id): Movie
     {
-        $movie = Movie::select('id', 'title', 'description', 'genre')
+        $movie = Movie::select('id', 'title', 'description', 'genre', 'poster_path')
             ->findOrFail($id);
+        
+        // 表示用URLを動的に追加
+        $movie->poster_url = $movie->poster_path
+            ? Storage::url($movie->poster_path)
+            : asset('images/no-image.jpg');;
 
         return $movie;
     }

@@ -14,12 +14,14 @@ interface MovieForm {
   title: string
   genre: string
   description: string
+  poster: File | null
 }
 
 const movieForm = useForm<MovieForm>({
   title: '',
   genre: '',
   description: '',
+  poster: null,
 })
 
 const props = defineProps<{
@@ -112,6 +114,21 @@ const submitMovieStore = () => {
           :rows="6"
           placeholder="説明文を入力"
           clearable
+        />
+      </el-form-item>
+
+      <!-- ポスター画像 -->
+      <el-form-item label="ポスター画像">
+        <input
+          type="file"
+          accept="image/*"
+          @change="(e) => movieForm.poster = (e.target as HTMLInputElement).files?.[0] ?? null"
+          class="block w-full text-sm text-gray-700
+                file:mr-4 file:py-2 file:px-4
+                file:rounded file:border-0
+                file:text-sm file:font-semibold
+                file:bg-blue-50 file:text-blue-700
+                hover:file:bg-blue-100"
         />
       </el-form-item>
 
