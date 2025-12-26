@@ -66,6 +66,15 @@ class MovieService
     }
 
     /**
+     * 映画の情報を更新
+     */
+    public function updateMovie(int $id, array $validated): void
+    {
+        $movie = Movie::findOrFail($id);
+        $movie->update($validated);
+    }
+
+    /**
      * 映画情報を検索するクエリを生成
      */
     private function searchMoviesQuery(Builder $query, Request $request): Builder
