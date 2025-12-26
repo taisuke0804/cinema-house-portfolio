@@ -33,6 +33,8 @@ Route::middleware(['web', 'admin'])->group(function () {
             Route::get('movies/create', 'create')->name('movies.create');
             Route::post('movies/store', 'store')->name('movies.store');
             Route::get('movies/{id}', 'show')->name('movies.show');
+            Route::get('movies/{id}/edit', 'edit')->name('movies.edit');
+            Route::put('movies/{id}', 'update')->name('movies.update');
         });
         
         Route::controller(ScreeningCalendarController::class)->group(function () {

@@ -27,7 +27,13 @@ const props = defineProps<{
 
     <el-card shadow="never" class="mb-6">
       <template #header>
-        <span class="font-semibold">映画情報</span>
+        <div class="flex justify-between items-center">
+          <span class="font-semibold">映画情報</span>
+  
+          <Link :href="route('admin.movies.edit', props.movie.id)">
+            <el-button type="primary">編集</el-button>
+          </Link>
+        </div>
       </template>
 
       <!-- ポスター画像 -->

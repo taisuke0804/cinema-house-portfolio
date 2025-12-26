@@ -10,6 +10,7 @@ use App\Http\Requests\MovieSearchRequest;
 use App\Http\Requests\Admin\StoreMovieRequest;
 use App\Enums\Genre;
 use Inertia\Response;
+use App\Http\Requests\Admin\UpdateMovieRequest;
 
 class MovieController extends Controller
 {
@@ -72,5 +73,38 @@ class MovieController extends Controller
                 'poster_url' => $movie->poster_url,
             ],
         ]);
+    }
+
+    /**
+     * 映画編集画面を表示
+     */
+    public function edit(int $id): Response
+    {
+        $movie = $this->movieService->getMovieById($id);
+
+        return Inertia::render('admin/movies/Edit', [
+            'movie' => [
+                'id' => $movie->id,
+                'title' => $movie->title,
+                'genre' => $movie->genre->value,
+                'description' => $movie->description,
+            ],
+            'genres' => Genre::options(),
+        ]);
+    }
+
+    /**
+     * 映画情報を更新
+     */
+    public function update(UpdateMovieRequest $request, int $id)
+    {
+        $this->movieService->updateMovie(
+            $id,
+            $request->validated()
+        );
+
+        return redirect()
+            ->route('admin.movies.index')
+            ->with('success', '映画情報を更新しました');
     }
 }
