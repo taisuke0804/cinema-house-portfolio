@@ -16,6 +16,7 @@ const props = defineProps<{
     description: string
     liked: boolean
     like_count: number
+    poster_url: string
   }
 }>()
 
@@ -49,6 +50,13 @@ const toggleLike = () => {
       <template #header>
         <span class="font-semibold">映画情報</span>
       </template>
+
+      <!-- ポスター画像 -->
+      <img
+        :src="props.movie.poster_url"
+        alt="映画ポスター"
+        class="w-64 rounded shadow mb-6"
+      />
 
       <div class="space-y-3">
         <p class="text-xl">
