@@ -88,6 +88,7 @@ class MovieController extends Controller
                 'title' => $movie->title,
                 'genre' => $movie->genre->value,
                 'description' => $movie->description,
+                'poster_url' => $movie->poster_url,
             ],
             'genres' => Genre::options(),
         ]);
@@ -100,7 +101,8 @@ class MovieController extends Controller
     {
         $this->movieService->updateMovie(
             $id,
-            $request->validated()
+            $request->validated(),
+            $request->file('poster')
         );
 
         return redirect()

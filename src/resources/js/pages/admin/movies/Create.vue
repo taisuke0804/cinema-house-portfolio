@@ -3,12 +3,16 @@ import { Head, useForm } from '@inertiajs/vue3'
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { ref } from 'vue'
+import { onBeforeUnmount } from 'vue'
 
 defineOptions({
   layout: AdminLayout
 })
 
 const movieFormRef = ref<FormInstance>()
+
+// ポスター画像プレビュー用
+const posterPreviewUrl = ref<string | null>(null)
 
 interface MovieForm {
   title: string
@@ -27,6 +31,30 @@ const movieForm = useForm<MovieForm>({
 const props = defineProps<{
   genres: { value: number; label: string }[]
 }>()
+
+// 画像プレビュー機能(メモリリーク対策済み)
+const handlePosterChange = (e: Event) => {
+  const file = (e.target as HTMLInputElement).files?.[0] ?? null
+
+  movieForm.poster = file
+
+  // 画像を選び直した際、古い blob URL を破棄
+  if (posterPreviewUrl.value) {
+    URL.revokeObjectURL(posterPreviewUrl.value)
+  }
+
+  // プレビューURL生成
+  posterPreviewUrl.value = file
+    ? URL.createObjectURL(file)
+    : null
+}
+
+// 画面離脱時もblob URL を破棄
+onBeforeUnmount(() => {
+  if (posterPreviewUrl.value) {
+    URL.revokeObjectURL(posterPreviewUrl.value)
+  }
+})
 
 const confirmDialogVisible = ref(false)
 
@@ -101,7 +129,7 @@ const submitMovieStore = () => {
             v-for="genre in props.genres"
             :key="genre.value"
             :label="genre.label"
-            :value="genre.value"
+            :value="String(genre.value)"
           />
         </el-select>
       </el-form-item>
@@ -122,7 +150,7 @@ const submitMovieStore = () => {
         <input
           type="file"
           accept="image/*"
-          @change="(e) => movieForm.poster = (e.target as HTMLInputElement).files?.[0] ?? null"
+          @change="handlePosterChange"
           class="block w-full text-sm text-gray-700
                 file:mr-4 file:py-2 file:px-4
                 file:rounded file:border-0
@@ -130,6 +158,15 @@ const submitMovieStore = () => {
                 file:bg-blue-50 file:text-blue-700
                 hover:file:bg-blue-100"
         />
+
+        <!-- プレビュー -->
+        <div v-if="posterPreviewUrl" class="mt-4">
+          <img
+            :src="posterPreviewUrl"
+            alt="ポスタープレビュー"
+            class="w-48 rounded shadow"
+          />
+        </div>
       </el-form-item>
 
       <!-- ボタン -->

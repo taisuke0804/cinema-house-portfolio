@@ -68,9 +68,21 @@ class MovieService
     /**
      * 映画の情報を更新
      */
-    public function updateMovie(int $id, array $validated): void
+    public function updateMovie(int $id, array $validated, UploadedFile | null $poster): void
     {
         $movie = Movie::findOrFail($id);
+
+        // 新しいポスター画像がアップロードされた場合のみ差し替え
+        if ($poster) {
+            // 既存のポスター画像があれば削除（デフォルト画像は対象外）
+            if ($movie->poster_path) {
+                Storage::disk('public')->delete($movie->poster_path);
+            }
+
+            // 新しい画像を保存
+            $validated['poster_path'] = $poster->store('movies', 'public');
+        }
+        
         $movie->update($validated);
     }
 
