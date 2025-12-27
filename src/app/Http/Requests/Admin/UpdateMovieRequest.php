@@ -27,6 +27,7 @@ class UpdateMovieRequest extends FormRequest
             'title' => ['required', 'string', 'max:100'],
             'genre' => ['required', 'integer', Rule::in(Genre::values())],
             'description' => ['required', 'string', 'max:1000'],
+            'poster' => ['nullable', 'image', 'max:2048'],
         ];
     }
 

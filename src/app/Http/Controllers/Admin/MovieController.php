@@ -101,7 +101,8 @@ class MovieController extends Controller
     {
         $this->movieService->updateMovie(
             $id,
-            $request->validated()
+            $request->validated(),
+            $request->file('poster')
         );
 
         return redirect()

@@ -26,6 +26,7 @@ const movieForm = useForm({
   genre: String(props.movie.genre), // セレクトボックスv-modelに渡す値の型を合致させるためキャスト
   description: props.movie.description,
   poster: null as File | null,
+  _method: "put" // InertiaのPUT送信ではfileが含まれないため、methodを指定してPOSTでPUT更新を行う
 })
 
 // 新規選択画像のプレビュー用
@@ -35,7 +36,6 @@ const handlePosterChange = (e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0] ?? null
 
   movieForm.poster = file
-
   // 既存の blob URL を破棄
   if (posterPreviewUrl.value) {
     URL.revokeObjectURL(posterPreviewUrl.value)
@@ -78,7 +78,7 @@ const handleOpenConfirm = async(formEl: FormInstance | undefined) => {
 
 // モーダルの送信処理
 const submitMovieUpdate = () => {
-  movieForm.put(route('admin.movies.update', props.movie.id), {
+  movieForm.post(route('admin.movies.update', props.movie.id), {
     onSuccess: () => {
       confirmDialogVisible.value = false
     },
