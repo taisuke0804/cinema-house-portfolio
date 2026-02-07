@@ -98,6 +98,39 @@ git checkout -b feature/0001-add-movie-schedule
 | refactor | リファクタリング     |
 | chore    | ライブラリ更新・環境設定 |
 
+## 本番環境（Docker）構成について
+
+本番環境では `compose.prod.yml` を使用し、  
+Laravel アプリケーションの役割ごとにコンテナを分離しています。
+
+### コンテナ構成
+
+- **app**  
+  Web リクエストを処理する Laravel アプリケーション（PHP-FPM）
+
+- **queue**  
+  一斉通知メール送信など、Queue を利用した非同期処理を担当  
+  `php artisan queue:work` を常駐実行
+
+- **scheduler**  
+  Laravel のタスクスケジュール実行用コンテナ  
+  過去の上映スケジュール削除などを定期実行
+
+- **web (nginx)**  
+  HTTP リクエストの受け口（ポート80）
+
+- **db (MySQL)**  
+  アプリケーション用データベース
+
+### スケジュール実行方法
+
+Laravel のスケジューラは cron を使わず、  
+以下のコマンドを無限ループで実行する専用コンテナで運用しています。
+
+```bash
+php artisan schedule:run
+```
+
 ## 今後の追加予定機能
 - CSVファイルによるインポート機能
 - 管理者側の2段階認証機能
