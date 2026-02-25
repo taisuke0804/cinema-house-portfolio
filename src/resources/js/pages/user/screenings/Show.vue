@@ -13,7 +13,7 @@ const page = usePage()
 const props = defineProps<{
   screening: {
     screening_id: number
-    date: string 
+    date: string
     screening_date: string
     start_time: string
     end_time: string
@@ -47,42 +47,54 @@ const isPastScreening = computed(() => {
 
 const reserveForm = useForm({
   screening_id: props.screening.screening_id,
-  seat_id: null as number | null,
-  row: '' as string,
-  number: null as number | null,
+  seat_ids: [] as number[],
 })
 
-// 追加: 表示用の "A1" 形式ラベル
-const seatLabel = ref<string | null>(null)
+const MAX_SELECT_SEATS = 3
 
-const selectedSeatId = ref<number | null>(null)
+const selectedSeats = ref<Array<{ id: number; row: string; number: number }>>([])
 
-watch(selectedSeatId, (v) => { reserveForm.seat_id = v }, { immediate: true })
+const selectedSeatLabels = computed(() => {
+  return selectedSeats.value.map(s => `${s.row}${s.number}`)
+})
+
+// 選択状態 → フォームへ同期
+watch(
+  selectedSeats,
+  () => {
+    reserveForm.seat_ids = selectedSeats.value.map(s => s.id)
+  },
+  { deep: true, immediate: true }
+)
 
 const toggleSeat = (seat: { id: number; is_reserved: boolean; user_id?: number | null; row: string; number: number }) => {
-  // 1人1席のみの仕様: 既に予約済みなら選択不可
-  if (props.authReservedSeat || seat.is_reserved ) return
+  // 既に予約済みなら選択不可
+  if (props.authReservedSeat || seat.is_reserved) return
 
-  selectedSeatId.value = (selectedSeatId.value === seat.id) ? null : seat.id
+  const idx = selectedSeats.value.findIndex(s => s.id === seat.id)
 
-  seatLabel.value = `${seat.row}${seat.number}`
+  // 既に選択済みなら解除
+  if (idx !== -1) {
+    selectedSeats.value.splice(idx, 1)
+    return
+  }
 
-  reserveForm.seat_id = selectedSeatId.value
-  reserveForm.row = seat.row
-  reserveForm.number = seat.number
+  // 最大3席まで
+  if (selectedSeats.value.length >= MAX_SELECT_SEATS) return
+
+  selectedSeats.value.push({ id: seat.id, row: seat.row, number: seat.number })
 }
 
 const confirmDialogVisible = ref(false)
 
-// モーダル
 const handleOpenConfirm = () => {
-  if (reserveForm.seat_id == null) return
+  if (reserveForm.seat_ids.length === 0) return
   confirmDialogVisible.value = true
 }
 
-// 追加: 予約POST
 const reserveSeat = () => {
-  if (reserveForm.seat_id == null) return
+  if (reserveForm.seat_ids.length === 0) return
+
   reserveForm.post(route('user.seats.reserve'), {
     onSuccess: () => {
       confirmDialogVisible.value = false
@@ -134,11 +146,11 @@ const reserveSeat = () => {
         </div>
       </template>
       <template v-else>
-        
+
         <div v-if="props.authReservedSeat" class="bg-yellow-200 p-4 my-2.5 rounded-lg">
           <p>あなたの予約済み座席: {{ props.authReservedSeat.row }}{{ props.authReservedSeat.number }}</p>
         </div>
-  
+
         <!-- バックエンド側のバリデーションエラーメッセージ -->
         <el-alert v-if="Object.keys(reserveForm.errors).length" title="入力に不備があります。下記をご確認ください。" type="error" show-icon :closable="false" >
           <ul class="text-sm text-red-700 list-disc list-inside">
@@ -147,29 +159,29 @@ const reserveSeat = () => {
             </li>
           </ul>
         </el-alert>
-  
+
         <!-- 凡例 -->
         <h3 class="my-2 font-bold">座席予約状況</h3>
         <p class="text-sm text-gray-500 mb-3">
           緑色: 空席 / 灰色: 予約済み / 黄色: 自分の予約 / 青色: 選択中
         </p>
-  
+
         <!-- 座席表 -->
         <div v-for="(rowSeats, row) in props.screening.seats" :key="row" class="flex items-center mb-3">
           <span class="w-6 font-bold">{{ row }}</span>
-  
+
           <div class="grid grid-cols-10 gap-3">
             <div
               v-for="seat in rowSeats"
               :key="seat.id"
               class="w-10 h-10 flex items-center justify-center rounded text-white text-sm"
               :class="{
-                'bg-blue-600': selectedSeatId === seat.id,
-                'bg-green-600': !seat.is_reserved && selectedSeatId !== seat.id, 
+                'bg-blue-600': selectedSeats.some(s => s.id === seat.id),
+                'bg-green-600': !seat.is_reserved && !selectedSeats.some(s => s.id === seat.id),
                 'bg-gray-400': seat.is_reserved && seat.user_id !== page.props.auth.user?.id,
-                'bg-yellow-400': props.authReservedSeat 
-                   && seat.row === props.authReservedSeat.row 
-                   && seat.number === props.authReservedSeat.number,
+                'bg-yellow-400': props.authReservedSeat
+                    && seat.row === props.authReservedSeat.row
+                    && seat.number === props.authReservedSeat.number,
                 'cursor-pointer': !seat.is_reserved && !props.authReservedSeat
               }"
               @click="toggleSeat(seat)"
@@ -178,26 +190,26 @@ const reserveSeat = () => {
             </div>
           </div>
         </div>
-  
+
         <template v-if="!props.authReservedSeat">
           <div class="border-t-1 border-gray-300"></div>
-    
+
           <h3 class=" font-bold leading-none my-3">選択した座席情報</h3>
-    
-          <p class="mb-4" v-if="selectedSeatId != null">
-            選択した座席: {{ seatLabel }}
+
+          <p class="mb-4" v-if="selectedSeats.length">
+            選択した座席: {{ selectedSeatLabels.join(', ') }}（{{ selectedSeats.length }} / 3）
           </p>
           <p class="mb-4" v-else>座席が選択されていません。</p>
-    
+
           <el-button
             type="primary"
-            :disabled="selectedSeatId == null || reserveForm.processing"
+            :disabled="selectedSeats.length === 0 || reserveForm.processing"
             :loading="reserveForm.processing"
-            @click="handleOpenConfirm" 
+            @click="handleOpenConfirm"
           >
             予約する
           </el-button>
-    
+
           <!-- モーダル -->
           <el-dialog
             v-model="confirmDialogVisible"
@@ -206,7 +218,7 @@ const reserveSeat = () => {
             :show-close="false"
           >
             <p>入力内容を送信してよろしいですか？</p>
-    
+
             <template #footer>
               <el-button @click="confirmDialogVisible = false">キャンセル</el-button>
               <el-button type="primary" @click="reserveSeat" >送信</el-button>
