@@ -17,25 +17,41 @@ class SeatReservationService
     public function reserveSeat(array $reservationData): void
     {
         DB::transaction(function () use ($reservationData) {
-            $seat = Seat::where('id', $reservationData['seat_id'])
-                ->where('screening_id', $reservationData['screening_id'])
-                ->lockForUpdate() // 排他制御
-                ->firstOrFail(); // マッチする行が見つからなかった場合、自動的に404を返す
-            
+            $seatIds = $reservationData['seat_ids'];
+            $screeningId = $reservationData['screening_id'];
+            $userId = $reservationData['user_id'];
 
-            if ($seat->is_reserved) {
-                // 例外ハンドラによりHTTP例外を投げる
-                if ($seat->user_id === $reservationData['user_id']) {
-                    abort(422, 'すでにこの座席を予約済みです。');
-                } else {
-                    abort(422, '他のユーザーがすでに予約しています。');
-                }
+            $seats = Seat::query()
+                ->whereIn('id', $seatIds)
+                ->where('screening_id', $screeningId)
+                ->lockForUpdate()
+                ->get();
+
+            if ($seats->count() !== count($seatIds)) {
+                abort(422, '選択した座席情報が正しくありません。');
             }
-            
-            $seat->update([
-                'user_id' => $reservationData['user_id'],
-                'is_reserved' => true,
-            ]);
+
+            // 自分自身の予約があるかどうか
+            $alreadyReservedBySelf = $seats->first(fn ($s) => $s->is_reserved && $s->user_id === $userId);
+            if ($alreadyReservedBySelf) {
+                abort(422, 'すでにこの座席を予約済みです。');
+            }
+
+            // 他のユーザーが予約済みかどうか
+            $alreadyReservedByOther = $seats->first(fn ($s) => $s->is_reserved && $s->user_id !== $userId);
+            if ($alreadyReservedByOther) {
+                abort(422, '他のユーザーがすでに予約しています。');
+            }
+
+            // 全て空席ならまとめて座席予約処理
+            Seat::query()
+                ->whereIn('id', $seatIds)
+                ->where('screening_id', $screeningId)
+                ->where('is_reserved', false)
+                ->update([
+                    'user_id' => $userId,
+                    'is_reserved' => true,
+                ]);
         });
     }
 
@@ -96,7 +112,7 @@ class SeatReservationService
         ->where('seats.id', $seat_id)
         ->where('seats.is_reserved', true)
         ->first();
-        
+
         return $reservationData;
     }
 
