@@ -36,11 +36,11 @@ class ScreeningController extends Controller
     {
         $screening = $this->screeningService->getScreeningDetails($screening_id);
 
-        $authReservedSeat = $this->screeningService->getAuthReservedSeatInfo($screening_id);
+        $authReservedSeats = $this->screeningService->getAuthReservedSeatsInfo($screening_id);
 
         return Inertia::render('user/screenings/Show', [
-            'screening' => $screening, 
-            'authReservedSeat' => $authReservedSeat,
+            'screening' => $screening,
+            'authReservedSeats' => $authReservedSeats,
         ]);
     }
 }
