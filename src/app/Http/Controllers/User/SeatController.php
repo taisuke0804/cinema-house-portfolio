@@ -71,9 +71,9 @@ class SeatController extends Controller
     /**
      * 座席予約をキャンセルする処理
      */
-    public function cancel(int $seat_id)
+    public function cancel(int $screening_id)
     {
-        $this->seatReservationService->cancelSeat($seat_id);
+        $this->seatReservationService->cancelSeat($screening_id);
 
         return redirect()->route('user.reservations.index')
             ->with('success', '予約をキャンセルしました');

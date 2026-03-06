@@ -147,16 +147,27 @@ class SeatReservationService
     /**
      * 座席予約をキャンセルする処理
      */
-    public function cancelSeat(int $seat_id): void
+    public function cancelSeat(int $screening_id): void
     {
-        $seat = Seat::where('id', $seat_id)
-            ->where('user_id', Auth::id())
-            ->where('is_reserved', true)
-            ->firstOrFail();
+        $userId = Auth::guard('web')->id();
 
-        $seat->update([
-            'is_reserved' => false,
-            'user_id' => null,
-        ]);
+        $seats = Seat::query()
+            ->where('screening_id', $screening_id)
+            ->where('user_id', $userId)
+            ->where('is_reserved', true)
+            ->get();
+
+        if ($seats->isEmpty()) {
+            abort(404, 'キャンセル対象の予約が見つかりません。');
+        }
+
+        Seat::query()
+            ->where('screening_id', $screening_id)
+            ->where('user_id', $userId)
+            ->where('is_reserved', true)
+            ->update([
+                'is_reserved' => false,
+                'user_id' => null,
+            ]);
     }
 }
