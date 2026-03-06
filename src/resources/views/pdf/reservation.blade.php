@@ -73,14 +73,14 @@ html, body {
 
     {{-- 映画情報 --}}
     <div class="movie-info">
-        <p><strong>上映タイトル :</strong> {{ $reservationData->screening->movie->title }}</p>
+        <p><strong>上映タイトル :</strong> {{ $reservationData['movie_title'] }}</p>
         <p>
-          <strong>上映日 :</strong> {{ \Carbon\Carbon::parse($reservationData->screening->start_time)->isoFormat('YYYY年MM月DD日（ddd曜日）') }}
+          <strong>上映日 :</strong> {{ $reservationData['screening_date'] }}
         </p>
         <p>
-          <strong>上映時間 :</strong> {{ $reservationData->screening->start_time->format('H:i') }} ～ {{ $reservationData->screening->end_time->format('H:i') }}
+          <strong>上映時間 :</strong> {{ $reservationData['start_time'] }} ～ {{ $reservationData['end_time'] }}
         </p>
-        <p><strong>座席 :</strong> {{ $reservationData->row .  strval($reservationData->number) }}</p>
+        <p><strong>座席 :</strong> {{ implode(', ', $reservationData['seat_labels']) }}</p>
         <p><strong>名前 :</strong> {{ $userName }} 様</p>
     </div>
 

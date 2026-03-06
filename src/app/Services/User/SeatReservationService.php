@@ -110,18 +110,38 @@ class SeatReservationService
      * ログインしたユーザーの予約した座席情報を取得（個別）
      * PDF出力用
      */
-    public function getReservationData(int $seat_id): ?Seat
+    public function getReservationData(int $screening_id): array
     {
-        $reservationData = Seat::with([
-            'screening:id,start_time,end_time,movie_id',
-            'screening.movie:id,title'
-        ])
-        ->select('seats.id', 'seats.screening_id', 'seats.row', 'seats.number')
-        ->where('seats.id', $seat_id)
-        ->where('seats.is_reserved', true)
-        ->first();
+        $userId = Auth::guard('web')->id();
+        $reservationSeats = Seat::with([
+                'screening:id,start_time,end_time,movie_id',
+                'screening.movie:id,title',
+            ])
+            ->select('seats.id', 'seats.screening_id', 'seats.row', 'seats.number', 'seats.user_id')
+            ->where('seats.screening_id', $screening_id)
+            ->where('seats.user_id', $userId)
+            ->where('seats.is_reserved', true)
+            ->orderBy('seats.row')
+            ->orderBy('seats.number')
+            ->get();
 
-        return $reservationData;
+        if ($reservationSeats->isEmpty()) {
+            abort(404, '予約情報が見つかりません。');
+        }
+
+        $firstSeat = $reservationSeats->first();
+        $screening = $firstSeat->screening;
+
+        return [
+            'movie_title' => $screening->movie->title,
+            'screening_date' => $screening->start_time->isoFormat('YYYY年MM月DD日（ddd曜日）'),
+            'start_time' => $screening->start_time->format('H:i'),
+            'end_time' => $screening->end_time->format('H:i'),
+            'seat_labels' => $reservationSeats
+                ->map(fn (Seat $seat) => $seat->row . $seat->number)
+                ->values()
+                ->all(),
+        ];
     }
 
     /**
