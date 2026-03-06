@@ -10,24 +10,19 @@ defineOptions({
 
 defineProps<{
   reservations: {
-    id: number
-    row: string
-    number: number
-    screening: {
-      start_format: string
-      end_format: string
-      date: string
-      movie: {
-        title: string
-      }
-    }
+    screening_id: number
+    movie_title: string
+    date: string
+    start_time: string
+    end_time: string
+    seat_labels: string[]
   }[]
 }>()
 
 /**
  * キャンセル確認 → 実行
  */
-const confirmCancel = (seat_id: number) => {
+const confirmCancel = (screening_id: number) => {
   ElMessageBox.confirm(
     'この予約をキャンセルしますか？',
     '確認',
@@ -38,7 +33,7 @@ const confirmCancel = (seat_id: number) => {
     }
   )
     .then(() => {
-      router.delete(route('user.reservations.cancel', seat_id))
+      router.delete(route('user.reservations.cancel', screening_id))
     })
     .catch(() => {
       // キャンセル時は何もしない
@@ -48,7 +43,7 @@ const confirmCancel = (seat_id: number) => {
 </script>
 <template>
   <Head title="座席予約一覧" />
-  
+
   <div class="p-12">
     <h1 class="text-2xl font-bold mb-6">座席予約一覧</h1>
 
@@ -78,30 +73,30 @@ const confirmCancel = (seat_id: number) => {
           </thead>
 
           <tbody>
-            <tr v-for="reservation in reservations" :key="reservation.id" class="hover:bg-gray-50">
+            <tr v-for="reservation in reservations" :key="reservation.screening_id" class="hover:bg-gray-50">
               <td class="px-4 py-2 border">
-                {{ reservation.screening.movie.title }}
+                {{ reservation.movie_title }}
               </td>
               <td class="px-4 py-2 border">
-                {{ reservation.screening.date }}
+                {{ reservation.date }}
               </td>
               <td class="px-4 py-2 border">
-                {{ reservation.screening.start_format }} ～ {{ reservation.screening.end_format }}
+                {{ reservation.start_time }} ～ {{ reservation.end_time }}
               </td>
               <td class="px-4 py-2 border">
-                {{ reservation.row }}{{ reservation.number }}
+                {{ reservation.seat_labels.join(', ') }}
               </td>
               <td class="px-4 py-2 border space-x-4">
                 <a
-                  :href="route('user.reservations.pdf', reservation.id)"
+                  :href="route('user.reservations.pdf', reservation.screening_id)"
                   target="_blank"
                   class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
                 >
                   PDF出力
                 </a>
-                <button 
+                <button
                   class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 cursor-pointer"
-                  @click="confirmCancel(reservation.id)"
+                  @click="confirmCancel(reservation.screening_id)"
                 >
                   キャンセル
                 </button>

@@ -24,9 +24,9 @@ class ReserveSeatRequest extends FormRequest
     {
         return [
             'screening_id' => ['required', 'integer', 'exists:screenings,id'],
-            'seat_id' => ['required', 'integer', 'exists:seats,id'], 
-            'row' => ['required', 'string', Rule::in(['A', 'B']), 'max:1'],
-            'number' => ['required', 'integer', 'between:1,10'],
+            // 複数席（最大3）
+            'seat_ids' => ['required', 'array', 'min:1', 'max:3'],
+            'seat_ids.*' => ['required', 'integer', 'distinct', 'exists:seats,id'],
         ];
     }
 }

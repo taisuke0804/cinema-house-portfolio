@@ -56,25 +56,25 @@ class SeatController extends Controller
     /**
      * 予約した座席情報のPDFを出力
      */
-    public function exportPdf(int $seat_id): \Illuminate\Http\Response
+    public function exportPdf(int $screening_id): \Illuminate\Http\Response
     {
-        $reservationData = $this->seatReservationService->getReservationData($seat_id);
+        $reservationData = $this->seatReservationService->getReservationData($screening_id);
 
         $pdf = Pdf::loadView('pdf.reservation', [
             'reservationData' => $reservationData,
             'userName' => Auth::guard('web')->user()->name,
         ]);
-        
+
     	return $pdf->stream();
     }
 
     /**
      * 座席予約をキャンセルする処理
      */
-    public function cancel(int $seat_id)
+    public function cancel(int $screening_id)
     {
-        $this->seatReservationService->cancelSeat($seat_id);
-        
+        $this->seatReservationService->cancelSeat($screening_id);
+
         return redirect()->route('user.reservations.index')
             ->with('success', '予約をキャンセルしました');
     }
