@@ -6,7 +6,7 @@ use App\Models\Screening;
 use App\Models\Seat;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Carbon\Carbon;
 
 class SeatReservationService
@@ -56,45 +56,53 @@ class SeatReservationService
     }
 
     /**
-     * ログインしたユーザーの予約した座席の一覧を取得
+     * ログインしたユーザーの予約した座席の一覧を取得（上映スケジュール単位）
      */
     public function getReserveList(): Collection
     {
         $userId = Auth::guard('web')->id();
         $today = Carbon::today();
 
-        $authReserveList = Seat::with([
-            'screening:id,start_time,end_time,movie_id',
-            'screening.movie:id,title'
-        ])
-        ->whereHas('screening', function ($query) use ($today) {
-            $query->where('start_time', '>=', $today);
-        })
-        ->select('seats.id', 'seats.screening_id', 'seats.row', 'seats.number', 'seats.is_reserved')
-        ->where('seats.user_id', $userId)
-        ->where('seats.is_reserved', true)
-        ->get();
+        $seats = Seat::with([
+                'screening:id,start_time,end_time,movie_id',
+                'screening.movie:id,title',
+            ])
+            ->whereHas('screening', function ($query) use ($today) {
+                $query->where('start_time', '>=', $today);
+            })
+            ->select('seats.id', 'seats.screening_id', 'seats.row', 'seats.number', 'seats.user_id', 'seats.is_reserved')
+            ->where('seats.user_id', $userId)
+            ->where('seats.is_reserved', true)
+            ->orderBy('seats.screening_id')
+            ->orderBy('seats.row')
+            ->orderBy('seats.number')
+            ->get();
 
-        $authReserveList->transform(function (Seat $seat) {
-            $seat->screening->date = $seat->screening->start_time->format('Y年m月d日');
-            $seat->screening->start_format = $seat->screening->start_time->format('H:i');
-            $seat->screening->end_format = $seat->screening->end_time->format('H:i');
-            return $seat;
-        });
+        // screening_id ごとにまとめる
+        $grouped = $seats
+            ->groupBy('screening_id')
+            ->map(function (Collection $group) {
+                $first = $group->first();
+                $screening = $first->screening;
 
-        // 日付順にSORTする
-        $authReserveList = $authReserveList->sortBy('screening.start_time')->values();
+                $seatLabels = $group
+                    ->map(fn (Seat $seat) => $seat->row . $seat->number)
+                    ->values();
 
-        return $authReserveList;
+                return collect([
+                    'screening_id' => $screening->id,
+                    'movie_title' => $screening->movie->title,
+                    'date' => $screening->start_time->format('Y年m月d日'),
+                    'start_time' => $screening->start_time->format('H:i'),
+                    'end_time' => $screening->end_time->format('H:i'),
+                    'seat_labels' => $seatLabels,
+                ]);
+            })
+            // 上映開始日時順に並べ替える
+            ->sortBy(fn ($item) => $item['date'] . ' ' . $item['start_time'])
+            ->values();
 
-        // DBの処理重視なら以下のような書き方もあり。
-        // Seat::with(['screening.movie'])
-        // ->join('screenings', 'seats.screening_id', '=', 'screenings.id')
-        // ->where('seats.user_id', $userId)
-        // ->where('seats.is_reserved', true)
-        // ->where('screenings.start_time', '>=', $today)
-        // ->orderBy('screenings.start_time', 'asc')
-        // ->get(['seats.*']);
+        return $grouped;
 
     }
 
