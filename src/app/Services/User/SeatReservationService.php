@@ -132,15 +132,34 @@ class SeatReservationService
         $firstSeat = $reservationSeats->first();
         $screening = $firstSeat->screening;
 
+        $seatLabels = $reservationSeats
+            ->map(fn (Seat $seat) => $seat->row . $seat->number)
+            ->values()
+            ->all();
+
+        $token = hash(
+            'sha256',
+            $screening->id . '|' . $userId . '|' . implode(',', $seatLabels)
+        );
+
+        // QRコード生成クラス 警告メッセージが出ないように明示的な型ヒント付き変数を用意
+        /** @var \SimpleSoftwareIO\QrCode\Generator $qrCode */
+        $qrCode = app(\SimpleSoftwareIO\QrCode\Generator::class);
+
+        $qrCodeBase64 = base64_encode(
+            $qrCode
+                ->size(180)
+                ->margin(1)
+                ->generate($token)
+        );
+
         return [
             'movie_title' => $screening->movie->title,
             'screening_date' => $screening->start_time->isoFormat('YYYY年MM月DD日（ddd曜日）'),
             'start_time' => $screening->start_time->format('H:i'),
             'end_time' => $screening->end_time->format('H:i'),
-            'seat_labels' => $reservationSeats
-                ->map(fn (Seat $seat) => $seat->row . $seat->number)
-                ->values()
-                ->all(),
+            'seat_labels' => $seatLabels,
+            'qr_code_base64' => $qrCodeBase64,
         ];
     }
 

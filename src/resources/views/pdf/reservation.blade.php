@@ -84,6 +84,18 @@ html, body {
         <p><strong>名前 :</strong> {{ $userName }} 様</p>
     </div>
 
+    <!-- 予約確認QRコード -->
+    @if (!empty($reservationData['qr_code_base64']))
+    <div style="margin-top: 16px; text-align: center;">
+        <p style="margin-bottom: 8px; font-size: 12px;">予約確認用QRコード</p>
+        <img
+        src="data:image/png;base64,{{ $reservationData['qr_code_base64'] }}"
+        alt="予約QRコード"
+        style="width: 140px; height: 140px;"
+        >
+    </div>
+    @endif
+
     {{-- 注意文 --}}
     <div class="notice">
         入場の際はこちらの画面をご提示ください。
