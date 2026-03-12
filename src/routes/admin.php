@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\MovieController;
 use App\Http\Controllers\Admin\ScreeningCalendarController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\Api\ScreeningSeatController;
 
 // ------------------------------------------------------------------------------------------------
 /**
@@ -24,7 +25,7 @@ Route::middleware(['web', 'admin'])->group(function () {
 
     Route::middleware(['auth:admin'])->group(function () {
         Route::post('logout', [AdminLoginController::class, 'logout'])->name('logout');
-        
+
         Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::post('notifications/send', [AdminDashboardController::class, 'sendNotification'])->name('notifications.send');
 
@@ -36,7 +37,7 @@ Route::middleware(['web', 'admin'])->group(function () {
             Route::get('movies/{id}/edit', 'edit')->name('movies.edit');
             Route::put('movies/{id}', 'update')->name('movies.update');
         });
-        
+
         Route::controller(ScreeningCalendarController::class)->group(function () {
             Route::get('screenings/calendar', 'index')->name('screenings.calendar');
             Route::get('movies/{movie_id}/screenings/create', 'create')->name('screenings.create');
@@ -50,6 +51,11 @@ Route::middleware(['web', 'admin'])->group(function () {
             Route::post('users', 'store')->name('users.store');
             Route::get('users/{id}', 'show')->name('users.show');
             Route::delete('users/{id}', 'destroy')->name('users.destroy');
+        });
+
+        Route::controller(ScreeningSeatController::class)->prefix('api')->name('api.')->group(function () {
+            Route::get('screenings/{screening}/seats', 'index')
+            ->name('screenings.seats.index');
         });
     });
 
