@@ -4,18 +4,20 @@ namespace App\Http\Controllers\Admin\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Services\Admin\Api\ScreeningSeatService;
 use App\Models\Screening;
+use Illuminate\Http\JsonResponse;
 
 class ScreeningSeatController extends Controller
 {
-    public function index(Screening $screening){
-        return response()->json([
-            'screening_id' => $screening->id,
-            'total_seats' => 0,
-            'reserved_seats' => 0,
-            'available_seats' => 0,
-            'occupancy_rate' => 0,
-            'seats' => [],
-        ]);
+    public function __construct(
+        private ScreeningSeatService $screeningSeatService
+    ) {}
+
+    public function index(Screening $screening) : JsonResponse
+    {
+        $seatStatus = $this->screeningSeatService->getSeatStatus($screening);
+
+        return response()->json($seatStatus);
     }
 }

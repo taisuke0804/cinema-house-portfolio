@@ -54,8 +54,7 @@ Route::middleware(['web', 'admin'])->group(function () {
         });
 
         Route::controller(ScreeningSeatController::class)->prefix('api')->name('api.')->group(function () {
-            Route::get('screenings/{screening}/seats', 'index')
-            ->name('screenings.seats.index');
+            Route::get('screenings/{screening}/seats', 'index')->name('screenings.seats.index');
         });
     });
 
