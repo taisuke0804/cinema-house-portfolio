@@ -56,4 +56,42 @@ class SeatReservationTest extends TestCase
             'user_id' => $user->id,
         ]);
     }
+
+    /**
+     * 異常系テスト
+     * 予約済みの座席に対して予約リクエストを送ると失敗する
+     */
+    public function test_user_cannot_reserve_already_reserved_seat(): void
+    {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
+        $user = User::factory()->create();
+        $this->actingAs($user, 'web');
+
+        $movie = Movie::factory()->create();
+
+        $screening = Screening::factory()->create([
+            'movie_id' => $movie->id,
+        ]);
+
+        $otherUser = User::factory()->create();
+
+        $seat = Seat::factory()->create([
+            'screening_id' => $screening->id,
+            'is_reserved' => true,
+            'user_id' => $otherUser->id,
+        ]);
+
+        $response = $this->post(route('user.seats.reserve'), [
+            'screening_id' => $screening->id,
+            'seat_ids' => [$seat->id],
+        ]);
+
+        $response->assertStatus(422);
+
+        $this->assertDatabaseHas('seats', [
+            'id' => $seat->id,
+            'is_reserved' => true,
+            'user_id' => $otherUser->id,
+        ]);
+    }
 }
