@@ -4,13 +4,16 @@ namespace Tests\Feature\User;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 use App\Models\User;
+use Tests\TestCase;
+use App\Models\Movie;
+use App\Models\Screening;
+use App\Models\Seat;
 
 class SeatReservationTest extends TestCase
 {
     use RefreshDatabase;
-    
+
     /**
      * A basic feature test example.
      */
@@ -23,10 +26,34 @@ class SeatReservationTest extends TestCase
 
     public function test_user_can_reserve_available_seat(): void
     {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
         $user = User::factory()->create();
+        $this->actingAs($user, 'web');
 
-        $response = $this->get('/');
+        $movie = Movie::factory()->create();
 
-        $response->assertStatus(200);
+        $screening = Screening::factory()->create([
+            'movie_id' => $movie->id,
+        ]);
+
+        $seat = Seat::factory()->create([
+            'screening_id' => $screening->id,
+            'is_reserved' => false,
+            'user_id' => null,
+        ]);
+
+        $response = $this->post(route('user.seats.reserve'), [
+            'screening_id' => $screening->id,
+            'seat_ids' => [$seat->id],
+        ]);
+
+        $response->assertRedirect(route('user.reservation.complete'));
+
+        $this->assertDatabaseHas('seats', [
+            'id' => $seat->id,
+            'screening_id' => $screening->id,
+            'is_reserved' => true,
+            'user_id' => $user->id,
+        ]);
     }
 }
