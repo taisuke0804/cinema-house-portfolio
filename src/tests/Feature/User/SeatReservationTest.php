@@ -201,4 +201,50 @@ class SeatReservationTest extends TestCase
         ]);
     }
 
+    /**
+     * 正常系テスト
+     * 3席以内であれば、複数席をまとめて予約できることを検証
+     */
+    public function test_user_can_reserve_multiple_seats_within_limit(): void
+    {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
+        $user = User::factory()->create();
+        $this->actingAs($user, 'web');
+
+        $movie = Movie::factory()->create();
+
+        $screening = Screening::factory()->create([
+            'movie_id' => $movie->id,
+        ]);
+
+        $seatIds = [];
+
+        for ($i = 0; $i < 3; $i++) {
+            $seat = Seat::factory()->create([
+                'screening_id' => $screening->id,
+                'row' => 'A',
+                'number' => $i + 1,
+                'is_reserved' => false,
+                'user_id' => null,
+            ]);
+
+            $seatIds[] = $seat->id;
+        }
+
+        $response = $this->post(route('user.seats.reserve'), [
+            'screening_id' => $screening->id,
+            'seat_ids' => $seatIds,
+        ]);
+
+        $response->assertRedirect(route('user.reservation.complete'));
+
+        foreach ($seatIds as $seatId) {
+            $this->assertDatabaseHas('seats', [
+                'id' => $seatId,
+                'screening_id' => $screening->id,
+                'is_reserved' => true,
+                'user_id' => $user->id,
+            ]);
+        }
+    }
 }
