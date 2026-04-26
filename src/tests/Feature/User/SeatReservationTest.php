@@ -94,4 +94,50 @@ class SeatReservationTest extends TestCase
             'user_id' => $otherUser->id,
         ]);
     }
+
+    /**
+     * 最大3席までの座席予約しか出来ないことの検証
+     */
+    public function test_user_cannot_reserve_more_than_three_seats(): void
+    {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
+        $user = User::factory()->create();
+        $this->actingAs($user, 'web');
+
+        $movie = Movie::factory()->create();
+
+        $screening = Screening::factory()->create([
+            'movie_id' => $movie->id,
+        ]);
+
+        $seatIds = [];
+        for ($i=0; $i < 4; $i++) {
+            $seat = Seat::factory()->create([
+                'screening_id' => $screening->id,
+                'row' => 'A',
+                'number' => $i + 1,
+                'is_reserved' => false,
+                'user_id' => null,
+            ]);
+            $seatIds[] = $seat->id;
+        }
+
+        $response = $this->post(route('user.seats.reserve'), [
+            'screening_id' => $screening->id,
+            'seat_ids' => $seatIds,
+        ]);
+
+        $response->assertRedirectBackWithErrors([
+            'seat_ids'
+        ], 'message');
+
+        foreach ($seatIds as $seatId) {
+            $this->assertDatabaseHas('seats', [
+                'id' => $seatId,
+                'screening_id' => $screening->id,
+                'is_reserved' => false,
+                'user_id' => null,
+            ]);
+        }
+    }
 }
