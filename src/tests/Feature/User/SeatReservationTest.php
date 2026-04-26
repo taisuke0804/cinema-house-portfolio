@@ -247,4 +247,47 @@ class SeatReservationTest extends TestCase
             ]);
         }
     }
+
+    /**
+     * 別上映回の座席は予約できないことを検証
+     */
+    public function test_user_cannot_reserve_seat_from_different_screening(): void
+    {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
+        $user = User::factory()->create();
+        $this->actingAs($user, 'web');
+
+        $movie = Movie::factory()->create();
+
+        $screening = Screening::factory()->create([
+            'movie_id' => $movie->id,
+        ]);
+
+        $seat = Seat::factory()->create([
+            'screening_id' => $screening->id,
+            'row' => 'A',
+            'number' => 1,
+            'is_reserved' => false,
+            'user_id' => null,
+        ]);
+
+        $anotherScreening = Screening::factory()->create([
+            'movie_id' => $movie->id,
+        ]);
+
+        $response = $this->post(route('user.seats.reserve'), [
+            'screening_id' => $anotherScreening->id,
+            'seat_ids' => [$seat->id],
+        ]);
+
+        $response->assertStatus(422);
+
+        $this->assertDatabaseHas('seats', [
+            'id' => $seat->id,
+            'screening_id' => $screening->id,
+            'is_reserved' => false,
+            'user_id' => null,
+        ]);
+
+    }
 }
