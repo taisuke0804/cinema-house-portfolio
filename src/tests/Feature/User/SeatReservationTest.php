@@ -140,4 +140,65 @@ class SeatReservationTest extends TestCase
             ]);
         }
     }
+
+    /**
+     * 複数席の中に1つでも予約済みが混ざっていたら全体の予約が失敗することを検証
+     */
+    public function test_user_cannot_reserve_seats_reserved_by_other_users(): void
+    {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
+        $user = User::factory()->create();
+        $this->actingAs($user, 'web');
+
+        $movie = Movie::factory()->create();
+
+        $screening = Screening::factory()->create([
+            'movie_id' => $movie->id,
+        ]);
+
+        $availableSeats = Seat::factory()->count(2)->create([
+            'screening_id' => $screening->id,
+            'is_reserved' => false,
+            'user_id' => null,
+        ]);
+
+        $otherUser = User::factory()->create();
+
+        $reservedSeat = Seat::factory()->create([
+            'screening_id' => $screening->id,
+            'is_reserved' => true,
+            'user_id' => $otherUser->id,
+        ]);
+
+        $seatIds = array_merge(
+            $availableSeats->pluck('id')->toArray(),
+            [$reservedSeat->id]
+        );
+
+        $response = $this->post(route('user.seats.reserve'), [
+            'screening_id' => $screening->id,
+            'seat_ids' => $seatIds,
+        ]);
+
+        $response->assertStatus(422);
+
+        // 空席だった2席は予約されないことを確認
+        foreach ($availableSeats as $seat) {
+            $this->assertDatabaseHas('seats', [
+                'id' => $seat->id,
+                'screening_id' => $screening->id,
+                'is_reserved' => false,
+                'user_id' => null,
+            ]);
+        }
+
+        // 予約済み席はそのままであることを確認
+        $this->assertDatabaseHas('seats', [
+            'id' => $reservedSeat->id,
+            'screening_id' => $screening->id,
+            'is_reserved' => true,
+            'user_id' => $otherUser->id,
+        ]);
+    }
+
 }
