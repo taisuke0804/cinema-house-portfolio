@@ -53,4 +53,36 @@ class MovieStoreTest extends TestCase
         $this->assertNotNull($movie->poster_path);
         Storage::disk('public')->assertExists($movie->poster_path);
     }
+
+    /**
+     * ポスター画像なしで映画を登録できること
+     */
+    public function test_can_store_movie_without_poster(): void
+    {
+        // 管理者を作成してログイン
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $admin */
+        $admin = Admin::factory()->create();
+        $this->actingAs($admin, 'admin');
+
+        $response = $this->post(route('admin.movies.store'), [
+            'title' => 'ポスターなし映画',
+            'genre' => 2,  // Comedy
+            'description' => 'ポスター画像なしの映画です。',
+            // poster は指定しない
+        ]);
+
+        // リダイレクト確認
+        $response->assertRedirect(route('admin.movies.index'));
+
+        // フラッシュメッセージ確認
+        $response->assertSessionHas('success', '映画の新規登録が完了しました');
+
+        // データベースに保存されたことを確認
+        $this->assertDatabaseHas('movies', [
+            'title' => 'ポスターなし映画',
+            'genre' => 2,
+            'description' => 'ポスター画像なしの映画です。',
+            'poster_path' => null,  // poster_path が null であることを確認
+        ]);
+    }
 }
