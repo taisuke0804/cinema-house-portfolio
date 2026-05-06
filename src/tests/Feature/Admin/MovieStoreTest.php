@@ -85,4 +85,24 @@ class MovieStoreTest extends TestCase
             'poster_path' => null,  // poster_path が null であることを確認
         ]);
     }
+
+    /**
+     * 未認証ユーザーは映画を登録できないこと
+     */
+    public function test_unauthenticated_user_cannot_store_movie(): void
+    {
+        $response = $this->post(route('admin.movies.store'), [
+            'title' => 'テスト映画',
+            'genre' => 1,
+            'description' => 'テスト説明',
+        ]);
+
+        // ログインページにリダイレクトされることを確認
+        $response->assertRedirect(route('admin.login'));
+
+        // データベースに保存されていないことを確認
+        $this->assertDatabaseMissing('movies', [
+            'title' => 'テスト映画',
+        ]);
+    }
 }
