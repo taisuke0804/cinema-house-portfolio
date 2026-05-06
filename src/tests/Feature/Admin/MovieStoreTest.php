@@ -128,4 +128,32 @@ class MovieStoreTest extends TestCase
             'title' => 'ユーザー禁止映画',
         ]);
     }
+
+    /**
+     * 必須項目が未入力の場合、登録できないこと
+     */
+    public function test_validation_fails_when_required_fields_are_missing(): void
+    {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $admin */
+        $admin = Admin::factory()->create();
+        $this->actingAs($admin, 'admin');
+
+        $response = $this->post(route('admin.movies.store'), [
+            // 必須項目を全て空で送信
+            'title' => '',
+            'genre' => '',
+            'description' => '',
+        ]);
+
+        // バリデーションエラーでリダイレクトされることを確認
+        $response->assertRedirect();
+
+        // バリデーションエラーがセッションに保持されていることを確認
+        $response->assertSessionHasErrors(['title', 'genre', 'description']);
+
+        // データベースに保存されていないことを確認
+        $this->assertDatabaseMissing('movies', [
+            'title' => '',
+        ]);
+    }
 }
