@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\Admin;
 use App\Models\Movie;
+use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -103,6 +104,28 @@ class MovieStoreTest extends TestCase
         // データベースに保存されていないことを確認
         $this->assertDatabaseMissing('movies', [
             'title' => 'テスト映画',
+        ]);
+    }
+
+    /**
+     * 一般ユーザーは管理者映画登録できないこと
+     */
+    public function test_general_user_cannot_store_movie(): void
+    {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
+        $user = User::factory()->create();
+        $this->actingAs($user, 'web');
+
+        $response = $this->post(route('admin.movies.store'), [
+            'title' => 'ユーザー禁止映画',
+            'genre' => 3,
+            'description' => '一般ユーザーからのアクセスは拒否されるべきです。',
+        ]);
+
+        $response->assertRedirect(route('admin.login'));
+
+        $this->assertDatabaseMissing('movies', [
+            'title' => 'ユーザー禁止映画',
         ]);
     }
 }
