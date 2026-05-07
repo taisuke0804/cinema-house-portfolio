@@ -156,4 +156,31 @@ class MovieStoreTest extends TestCase
             'title' => '',
         ]);
     }
+
+    /**
+     * 不正なジャンルでは映画を登録できないこと
+     */
+    public function test_validation_fails_with_invalid_genre(): void
+    {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $admin */
+        $admin = Admin::factory()->create();
+        $this->actingAs($admin, 'admin');
+
+        $response = $this->post(route('admin.movies.store'), [
+            'title' => '無効ジャンル映画',
+            'genre' => 999,
+            'description' => 'ジャンルが不正な場合のテストです。',
+        ]);
+
+        // バリデーションエラーでリダイレクトされることを確認
+        $response->assertRedirect();
+
+        // genre フィールドのエラーを確認
+        $response->assertSessionHasErrors(['genre']);
+
+        // データベースに保存されていないことを確認
+        $this->assertDatabaseMissing('movies', [
+            'title' => '無効ジャンル映画',
+        ]);
+    }
 }
