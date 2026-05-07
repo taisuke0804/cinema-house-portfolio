@@ -183,4 +183,34 @@ class MovieStoreTest extends TestCase
             'title' => '無効ジャンル映画',
         ]);
     }
+
+    /**
+     * 不正なポスター画像では映画を登録できないこと
+     */
+    public function test_validation_fails_with_invalid_poster_file(): void
+    {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $admin */
+        $admin = Admin::factory()->create();
+        $this->actingAs($admin, 'admin');
+
+        $invalidPoster = UploadedFile::fake()->create('poster.txt', 100, 'text/plain');
+
+        $response = $this->post(route('admin.movies.store'), [
+            'title' => '不正ポスター映画',
+            'genre' => 1,
+            'description' => 'ポスターが画像形式でない場合のテストです。',
+            'poster' => $invalidPoster,
+        ]);
+
+        // バリデーションエラーでリダイレクトされることを確認
+        $response->assertRedirect();
+
+        // poster フィールドのエラーを確認
+        $response->assertSessionHasErrors(['poster']);
+
+        // データベースに保存されていないことを確認
+        $this->assertDatabaseMissing('movies', [
+            'title' => '不正ポスター映画',
+        ]);
+    }
 }
