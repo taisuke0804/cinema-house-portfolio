@@ -213,4 +213,34 @@ class MovieStoreTest extends TestCase
             'title' => '不正ポスター映画',
         ]);
     }
+
+    /**
+     * ポスター画像サイズが上限を超える場合、登録できないこと
+     */
+    public function test_validation_fails_when_poster_size_exceeds_limit(): void
+    {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $admin */
+        $admin = Admin::factory()->create();
+        $this->actingAs($admin, 'admin');
+
+        $oversizedPoster = UploadedFile::fake()->create('poster.jpg', 3000, 'image/jpeg');
+
+        $response = $this->post(route('admin.movies.store'), [
+            'title' => '大きすぎるポスター映画',
+            'genre' => 1,
+            'description' => 'ポスター画像が上限を超える場合のテストです。',
+            'poster' => $oversizedPoster,
+        ]);
+
+        // バリデーションエラーでリダイレクトされることを確認
+        $response->assertRedirect();
+
+        // poster フィールドのエラーを確認
+        $response->assertSessionHasErrors(['poster']);
+
+        // データベースに保存されていないことを確認
+        $this->assertDatabaseMissing('movies', [
+            'title' => '大きすぎるポスター映画',
+        ]);
+    }
 }
